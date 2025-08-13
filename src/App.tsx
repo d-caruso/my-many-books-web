@@ -1,11 +1,14 @@
 import React from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Header } from './components/Layout/Header';
+import { InstallPrompt, UpdatePrompt, OfflineIndicator } from './components/PWA';
 
 function App() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-background">
+        <OfflineIndicator />
+        <UpdatePrompt />
         <Header />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -56,6 +59,8 @@ function App() {
             </div>
           </div>
         </main>
+        
+        <InstallPrompt />
       </div>
     </ThemeProvider>
   );
