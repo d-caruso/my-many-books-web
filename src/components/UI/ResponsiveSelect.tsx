@@ -52,7 +52,7 @@ export const ResponsiveSelect: React.FC<ResponsiveSelectProps> = ({
         
         {/* Custom dropdown arrow */}
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <ChevronDownIcon className="w-4 h-4 text-text-muted" />
+          <ChevronDownIcon className="w-4 h-4 text-text-muted flex-shrink-0" />
         </div>
       </div>
       

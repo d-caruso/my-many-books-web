@@ -118,7 +118,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
               {error ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 text-red-400">
-                    <CheckCircleIcon className="w-full h-full" />
+                    <CheckCircleIcon className="w-16 h-16" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Camera Access Required</h3>
                   <p className="text-sm text-gray-300 mb-4">{error}</p>
@@ -132,7 +132,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
               ) : (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 animate-pulse">
-                    <StarIcon className="w-full h-full" />
+                    <StarIcon className="w-16 h-16" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Initializing Camera</h3>
                   <p className="text-sm text-gray-300">Please wait...</p>

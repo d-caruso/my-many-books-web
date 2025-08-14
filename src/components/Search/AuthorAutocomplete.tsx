@@ -192,7 +192,7 @@ export const AuthorAutocomplete: React.FC<AuthorAutocompleteProps> = ({
             }}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-text-secondary"
           >
-            <XMarkIcon className="w-4 h-4" />
+            <XMarkIcon className="w-4 h-4 flex-shrink-0" />
           </button>
         )}
       </div>

@@ -62,7 +62,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-text-muted" />
+                <MagnifyingGlassIcon className="h-5 w-5 text-text-muted flex-shrink-0" />
               </div>
               <input
                 type="text"
@@ -96,7 +96,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
           >
             <span>Advanced Filters</span>
             <ChevronDownIcon 
-              className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} 
+              className={`w-4 h-4 flex-shrink-0 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} 
             />
           </button>
 
