@@ -65,7 +65,7 @@ export interface ApiError {
 }
 
 // Theme Types
-export type ThemeName = 'default' | 'dark' | 'bookish';
+export type ThemeName = 'default' | 'dark' | 'bookish' | 'forest' | 'ocean' | 'sunset' | 'lavender';
 
 export interface Theme {
   name: ThemeName;

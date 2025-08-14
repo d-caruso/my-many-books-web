@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
+import { ThemeSelector } from '../Theme/ThemeSelector';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useAuth();
-  const { theme, setTheme, themes } = useTheme();
   const location = useLocation();
 
   const handleLogout = async () => {
@@ -57,17 +56,11 @@ export const Navbar: React.FC = () => {
           {/* User Menu & Theme Selector */}
           <div className="flex items-center space-x-4">
             {/* Theme Selector */}
-            <select
-              value={theme}
-              onChange={(e) => setTheme(e.target.value as any)}
-              className="text-sm border border-secondary-300 rounded-lg px-2 py-1 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              {Object.entries(themes).map(([key, themeName]) => (
-                <option key={key} value={key}>
-                  {themeName}
-                </option>
-              ))}
-            </select>
+            <ThemeSelector 
+              variant="dropdown" 
+              showLabels={false} 
+              className="hidden sm:block"
+            />
 
             {/* User Menu */}
             <div className="relative">
