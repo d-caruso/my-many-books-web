@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Book, User, PaginatedResponse, ApiError, BookFormData, SearchFilters } from '../types';
+import { Book, User, PaginatedResponse, ApiError, BookFormData, SearchFilters, SearchResult } from '../types';
 
 class ApiService {
   private api: AxiosInstance;
@@ -87,6 +87,42 @@ class ApiService {
     await this.api.delete(`/books/user/${id}`);
   }
 
+  // Search books with enhanced filters
+  async searchBooks(searchParams: {
+    q?: string;
+    page?: number;
+    limit?: number;
+    status?: string;
+    sortBy?: string;
+    authorId?: number;
+    categoryId?: number;
+  }): Promise<SearchResult> {
+    const params = new URLSearchParams();
+    
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        params.append(key, value.toString());
+      }
+    });
+
+    const response = await this.api.get(`/books/search?${params.toString()}`);
+    
+    // Transform response to match SearchResult interface
+    const data = response.data;
+    return {
+      books: data.books || [],
+      total: data.pagination?.totalItems || data.total || 0,
+      hasMore: data.pagination ? data.pagination.currentPage < data.pagination.totalPages : false,
+      page: data.pagination?.currentPage || data.page || 1
+    };
+  }
+
+  // Get book by ISBN
+  async getBookByISBN(isbn: string): Promise<Book> {
+    const response = await this.api.get(`/books/isbn/${isbn}`);
+    return response.data;
+  }
+
   // ISBN lookup
   async searchByIsbn(isbn: string): Promise<any> {
     const response = await this.api.get(`/books/user/search/isbn/${isbn}`);
@@ -106,3 +142,14 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+
+// Legacy export for compatibility
+export const bookAPI = {
+  searchBooks: apiService.searchBooks.bind(apiService),
+  getBookByISBN: apiService.getBookByISBN.bind(apiService),
+  getBooks: apiService.getBooks.bind(apiService),
+  getBook: apiService.getBook.bind(apiService),
+  createBook: apiService.createBook.bind(apiService),
+  updateBook: apiService.updateBook.bind(apiService),
+  deleteBook: apiService.deleteBook.bind(apiService),
+};

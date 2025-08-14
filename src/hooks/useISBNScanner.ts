@@ -204,7 +204,7 @@ export const useISBNScanner = (
       setIsScanning(false);
       onScanError?.('Failed to start camera');
     }
-  }, [hasPermission, requestPermission, selectedDeviceId, devices, onScanSuccess, onScanError]);
+  }, [hasPermission, requestPermission, selectedDeviceId, devices, onScanSuccess, onScanError, validateISBN]);
 
   // Stop scanning
   const stopScanning = useCallback((): void => {

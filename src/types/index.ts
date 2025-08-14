@@ -1,8 +1,8 @@
-// API Types matching the backend
+// API Types matching the backend exactly
 export interface Book {
   id: number;
-  title: string;
   isbnCode: string;
+  title: string;
   editionNumber?: number;
   editionDate?: string;
   status?: 'in progress' | 'paused' | 'finished';
@@ -101,8 +101,19 @@ export interface BookCardProps {
 export interface SearchFilters {
   query?: string;
   status?: Book['status'];
+  authorId?: number;
+  categoryId?: number;
+  sortBy?: 'relevance' | 'title' | 'author' | 'date-added';
   page?: number;
   limit?: number;
+}
+
+// Search Results Types
+export interface SearchResult {
+  books: Book[];
+  total: number;
+  hasMore: boolean;
+  page: number;
 }
 
 // ISBN Scanner Types
