@@ -5,7 +5,6 @@ import { AuthorAutocomplete } from './AuthorAutocomplete';
 import { ResponsiveInput } from '../UI/ResponsiveInput';
 import { ResponsiveSelect } from '../UI/ResponsiveSelect';
 import { ResponsiveButton } from '../UI/ResponsiveButton';
-import { MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface BookSearchFormProps {
   onSearch: (query: string, filters: SearchFilters) => void;
@@ -62,7 +61,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-text-muted flex-shrink-0" />
+                <span className="text-text-muted" style={{fontSize: '20px'}}>🔍</span>
               </div>
               <input
                 type="text"
@@ -95,9 +94,12 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             className="text-primary-500 hover:text-primary-600 text-sm font-medium flex items-center space-x-1"
           >
             <span>Advanced Filters</span>
-            <ChevronDownIcon 
-              className={`w-4 h-4 flex-shrink-0 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} 
-            />
+            <span 
+              className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
+              style={{fontSize: '16px', display: 'inline-block'}}
+            >
+              ▼
+            </span>
           </button>
 
           {(Object.keys(filters).length > 0 || query || selectedAuthor) && (

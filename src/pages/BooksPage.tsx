@@ -251,9 +251,7 @@ export const BooksPage: React.FC = () => {
           onClick={handleAddBook}
           className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 sm:px-6 rounded-lg font-medium transition-colors flex items-center space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
         >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
+          <span style={{fontSize: '16px'}}>➕</span>
           <span className="hidden xs:inline">Add Book</span>
           <span className="xs:hidden">Add</span>
         </button>
@@ -280,9 +278,7 @@ export const BooksPage: React.FC = () => {
               }}
               className="text-text-muted hover:text-text-secondary text-sm flex items-center space-x-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <span style={{fontSize: '16px'}}>✕</span>
               <span>Clear search</span>
             </button>
           )}
@@ -294,9 +290,7 @@ export const BooksPage: React.FC = () => {
             className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-primary-100 text-primary-600' : 'text-text-muted hover:text-text-secondary'}`}
             title="Grid view"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
+            <span style={{fontSize: '20px'}}>⚏</span>
           </button>
           
           <button
@@ -304,9 +298,7 @@ export const BooksPage: React.FC = () => {
             className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary-100 text-primary-600' : 'text-text-muted hover:text-text-secondary'}`}
             title="List view"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
+            <span style={{fontSize: '20px'}}>☰</span>
           </button>
         </div>
       </div>

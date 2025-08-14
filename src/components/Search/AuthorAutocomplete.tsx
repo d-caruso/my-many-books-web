@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Author } from '../../types';
 import { authorAPI } from '../../services/api';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface AuthorAutocompleteProps {
   value?: Author | null;
@@ -192,7 +191,7 @@ export const AuthorAutocomplete: React.FC<AuthorAutocompleteProps> = ({
             }}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-text-secondary"
           >
-            <XMarkIcon className="w-4 h-4 flex-shrink-0" />
+            <span style={{fontSize: '16px'}}>✕</span>
           </button>
         )}
       </div>

@@ -40,9 +40,7 @@ export const BookList: React.FC<BookListProps> = ({
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
         <div className="text-red-600 mb-2">
-          <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <span style={{fontSize: '32px'}}>⚠️</span>
         </div>
         <h3 className="text-lg font-medium text-red-800 mb-1">Error Loading Books</h3>
         <p className="text-red-600">{error}</p>
@@ -54,9 +52,7 @@ export const BookList: React.FC<BookListProps> = ({
     return (
       <div className="text-center py-12">
         <div className="text-text-muted mb-4">
-          <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
+          <span style={{fontSize: '64px', display: 'block', marginBottom: '16px'}}>📚</span>
         </div>
         <h3 className="text-lg font-medium text-text-primary mb-2">{emptyMessage}</h3>
         <p className="text-text-secondary">Start building your library by adding your first book</p>

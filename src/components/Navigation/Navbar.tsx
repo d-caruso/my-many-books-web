@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ThemeSelector } from '../Theme/ThemeSelector';
-import { BookOpenIcon, ChevronDownIcon, Bars3Icon } from '@heroicons/react/24/outline';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,7 +30,7 @@ export const Navbar: React.FC = () => {
             to="/" 
             className="flex items-center space-x-2 text-xl font-bold text-primary-600"
           >
-            <BookOpenIcon className="w-8 h-8 flex-shrink-0" />
+            <span style={{fontSize: '32px'}}>📚</span>
             <span>My Many Books</span>
           </Link>
 
@@ -73,7 +72,7 @@ export const Navbar: React.FC = () => {
                 <span className="hidden md:block text-sm font-medium">
                   {user?.name} {user?.surname}
                 </span>
-                <ChevronDownIcon className="w-4 h-4 flex-shrink-0" />
+                <span style={{fontSize: '16px'}}>▼</span>
               </button>
 
               {/* Dropdown Menu */}
@@ -99,7 +98,7 @@ export const Navbar: React.FC = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 text-text-secondary hover:text-text-primary"
             >
-              <Bars3Icon className="w-6 h-6 flex-shrink-0" />
+              <span style={{fontSize: '24px'}}>☰</span>
             </button>
           </div>
         </div>

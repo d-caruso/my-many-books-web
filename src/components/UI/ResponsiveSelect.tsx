@@ -1,5 +1,4 @@
 import React from 'react';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface ResponsiveSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -52,7 +51,7 @@ export const ResponsiveSelect: React.FC<ResponsiveSelectProps> = ({
         
         {/* Custom dropdown arrow */}
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <ChevronDownIcon className="w-4 h-4 text-text-muted flex-shrink-0" />
+          <span className="text-text-muted" style={{fontSize: '16px'}}>▼</span>
         </div>
       </div>
       
