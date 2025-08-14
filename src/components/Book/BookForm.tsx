@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Book, Author, Category } from '../../types';
 import { useCategories } from '../../hooks/useCategories';
 import { AuthorAutocomplete } from '../Search/AuthorAutocomplete';
+import { ResponsiveInput } from '../UI/ResponsiveInput';
+import { ResponsiveSelect } from '../UI/ResponsiveSelect';
+import { ResponsiveButton } from '../UI/ResponsiveButton';
 
 interface BookFormProps {
   book?: Book | null;
@@ -132,112 +135,72 @@ export const BookForm: React.FC<BookFormProps> = ({
 
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-text-secondary mb-1">
-            Title <span className="text-semantic-error">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-              errors.title
-                ? 'border-semantic-error bg-red-50'
-                : 'border-secondary-300 bg-background'
-            } text-text-primary`}
-            placeholder="Enter book title"
-            disabled={loading}
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-semantic-error">{errors.title}</p>
-          )}
-        </div>
+        <ResponsiveInput
+          type="text"
+          id="title"
+          label="Title"
+          isRequired
+          value={formData.title}
+          onChange={(e) => handleInputChange('title', e.target.value)}
+          placeholder="Enter book title"
+          disabled={loading}
+          error={errors.title}
+        />
 
         {/* ISBN */}
-        <div>
-          <label htmlFor="isbnCode" className="block text-sm font-medium text-text-secondary mb-1">
-            ISBN <span className="text-semantic-error">*</span>
-          </label>
-          <input
-            type="text"
-            id="isbnCode"
-            value={formData.isbnCode}
-            onChange={(e) => handleInputChange('isbnCode', e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono ${
-              errors.isbnCode
-                ? 'border-semantic-error bg-red-50'
-                : 'border-secondary-300 bg-background'
-            } text-text-primary`}
-            placeholder="e.g., 978-0-123-45678-9"
-            disabled={loading}
-          />
-          {errors.isbnCode && (
-            <p className="mt-1 text-sm text-semantic-error">{errors.isbnCode}</p>
-          )}
-        </div>
+        <ResponsiveInput
+          type="text"
+          id="isbnCode"
+          label="ISBN"
+          isRequired
+          value={formData.isbnCode}
+          onChange={(e) => handleInputChange('isbnCode', e.target.value)}
+          placeholder="e.g., 978-0-123-45678-9"
+          disabled={loading}
+          error={errors.isbnCode}
+          className="font-mono"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Edition Number */}
-          <div>
-            <label htmlFor="editionNumber" className="block text-sm font-medium text-text-secondary mb-1">
-              Edition Number
-            </label>
-            <input
-              type="number"
-              id="editionNumber"
-              value={formData.editionNumber || ''}
-              onChange={(e) => handleInputChange('editionNumber', 
-                e.target.value ? parseInt(e.target.value) : undefined
-              )}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                errors.editionNumber
-                  ? 'border-semantic-error bg-red-50'
-                  : 'border-secondary-300 bg-background'
-              } text-text-primary`}
-              placeholder="e.g., 1"
-              min="1"
-              disabled={loading}
-            />
-            {errors.editionNumber && (
-              <p className="mt-1 text-sm text-semantic-error">{errors.editionNumber}</p>
+          <ResponsiveInput
+            type="number"
+            id="editionNumber"
+            label="Edition Number"
+            value={formData.editionNumber || ''}
+            onChange={(e) => handleInputChange('editionNumber', 
+              e.target.value ? parseInt(e.target.value) : undefined
             )}
-          </div>
+            placeholder="e.g., 1"
+            min="1"
+            disabled={loading}
+            error={errors.editionNumber}
+          />
 
           {/* Edition Date */}
-          <div>
-            <label htmlFor="editionDate" className="block text-sm font-medium text-text-secondary mb-1">
-              Edition Date
-            </label>
-            <input
-              type="date"
-              id="editionDate"
-              value={formData.editionDate}
-              onChange={(e) => handleInputChange('editionDate', e.target.value)}
-              className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
-              disabled={loading}
-            />
-          </div>
+          <ResponsiveInput
+            type="date"
+            id="editionDate"
+            label="Edition Date"
+            value={formData.editionDate}
+            onChange={(e) => handleInputChange('editionDate', e.target.value)}
+            disabled={loading}
+          />
         </div>
 
         {/* Status */}
-        <div>
-          <label htmlFor="status" className="block text-sm font-medium text-text-secondary mb-1">
-            Reading Status
-          </label>
-          <select
-            id="status"
-            value={formData.status || ''}
-            onChange={(e) => handleInputChange('status', e.target.value as Book['status'] || undefined)}
-            className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
-            disabled={loading}
-          >
-            <option value="">No Status</option>
-            <option value="in progress">In Progress</option>
-            <option value="paused">Paused</option>
-            <option value="finished">Finished</option>
-          </select>
-        </div>
+        <ResponsiveSelect
+          id="status"
+          label="Reading Status"
+          value={formData.status || ''}
+          onChange={(e) => handleInputChange('status', e.target.value as Book['status'] || undefined)}
+          disabled={loading}
+        >
+          <option value="">No Status</option>
+          <option value="in progress">In Progress</option>
+          <option value="paused">Paused</option>
+          <option value="finished">Finished</option>
+        </ResponsiveSelect>
 
         {/* Authors */}
         <div>
@@ -305,8 +268,8 @@ export const BookForm: React.FC<BookFormProps> = ({
         </div>
 
         {/* Notes */}
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-text-secondary mb-1">
+        <div className="space-y-1">
+          <label htmlFor="notes" className="block text-sm font-medium text-text-secondary">
             Notes
           </label>
           <textarea
@@ -314,33 +277,33 @@ export const BookForm: React.FC<BookFormProps> = ({
             value={formData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary resize-vertical"
+            className="w-full px-3 py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-base sm:text-sm min-h-[44px] touch-manipulation transition-colors duration-200 bg-background text-text-primary hover:border-secondary-400 resize-vertical"
             placeholder="Add any notes about this book..."
             disabled={loading}
           />
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-end space-x-4 pt-6 border-t border-secondary-200">
-          <button
+        <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-end space-y-3 xs:space-y-0 xs:space-x-4 pt-6 border-t border-secondary-200">
+          <ResponsiveButton
             type="button"
+            variant="secondary"
+            size="lg"
             onClick={onCancel}
-            className="px-6 py-2 border border-secondary-300 text-text-secondary rounded-lg hover:bg-secondary-50 transition-colors"
             disabled={loading}
           >
             Cancel
-          </button>
+          </ResponsiveButton>
           
-          <button
+          <ResponsiveButton
             type="submit"
+            variant="primary"
+            size="lg"
             disabled={loading}
-            className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            loading={loading}
           >
-            {loading && (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            )}
-            <span>{book ? 'Update Book' : 'Add Book'}</span>
-          </button>
+            {book ? 'Update Book' : 'Add Book'}
+          </ResponsiveButton>
         </div>
       </form>
     </div>

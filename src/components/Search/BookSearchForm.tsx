@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { SearchFilters, Author } from '../../types';
 import { useCategories } from '../../hooks/useCategories';
 import { AuthorAutocomplete } from './AuthorAutocomplete';
+import { ResponsiveInput } from '../UI/ResponsiveInput';
+import { ResponsiveSelect } from '../UI/ResponsiveSelect';
+import { ResponsiveButton } from '../UI/ResponsiveButton';
 
 interface BookSearchFormProps {
   onSearch: (query: string, filters: SearchFilters) => void;
@@ -68,26 +71,21 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by title, author, ISBN..."
-                className="block w-full pl-10 pr-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-background text-text-primary"
+                className="block w-full pl-10 pr-3 py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-background text-text-primary text-base sm:text-sm min-h-[44px] touch-manipulation transition-colors duration-200 hover:border-secondary-400"
                 disabled={loading}
               />
             </div>
           </div>
           
-          <button
+          <ResponsiveButton
             type="submit"
+            variant="primary"
+            size="md"
             disabled={loading}
-            className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors font-medium"
+            loading={loading}
           >
-            {loading ? (
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Searching...</span>
-              </div>
-            ) : (
-              'Search'
-            )}
-          </button>
+            {loading ? 'Searching...' : 'Search'}
+          </ResponsiveButton>
         </div>
 
         {/* Advanced filters toggle */}
@@ -121,7 +119,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
 
         {/* Advanced filters */}
         {showAdvanced && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-secondary-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-secondary-200">
             {/* Author search */}
             <div>
               <label htmlFor="author" className="block text-sm font-medium text-text-secondary mb-1">
@@ -136,66 +134,49 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             </div>
 
             {/* Category filter */}
-            <div>
-              <label htmlFor="categoryId" className="block text-sm font-medium text-text-secondary mb-1">
-                Category
-              </label>
-              <select
-                id="categoryId"
-                value={filters.categoryId || ''}
-                onChange={(e) => handleFilterChange('categoryId', e.target.value ? parseInt(e.target.value) : undefined)}
-                disabled={categoriesLoading}
-                className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {categoriesLoading ? 'Loading categories...' : 'All Categories'}
+            <ResponsiveSelect
+              id="categoryId"
+              label="Category"
+              value={filters.categoryId || ''}
+              onChange={(e) => handleFilterChange('categoryId', e.target.value ? parseInt(e.target.value) : undefined)}
+              disabled={categoriesLoading}
+              error={categoriesError || undefined}
+            >
+              <option value="">
+                {categoriesLoading ? 'Loading categories...' : 'All Categories'}
+              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              {categoriesError && (
-                <p className="mt-1 text-sm text-semantic-error">{categoriesError}</p>
-              )}
-            </div>
+              ))}
+            </ResponsiveSelect>
 
             {/* Book status */}
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-text-secondary mb-1">
-                Reading Status
-              </label>
-              <select
-                id="status"
-                value={filters.status || ''}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
-              >
-                <option value="">Any Status</option>
-                <option value="in progress">In Progress</option>
-                <option value="paused">Paused</option>
-                <option value="finished">Finished</option>
-              </select>
-            </div>
+            <ResponsiveSelect
+              id="status"
+              label="Reading Status"
+              value={filters.status || ''}
+              onChange={(e) => handleFilterChange('status', e.target.value)}
+            >
+              <option value="">Any Status</option>
+              <option value="in progress">In Progress</option>
+              <option value="paused">Paused</option>
+              <option value="finished">Finished</option>
+            </ResponsiveSelect>
 
             {/* Sort by */}
-            <div>
-              <label htmlFor="sortBy" className="block text-sm font-medium text-text-secondary mb-1">
-                Sort By
-              </label>
-              <select
-                id="sortBy"
-                value={filters.sortBy || 'relevance'}
-                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
-              >
-                <option value="relevance">Relevance</option>
-                <option value="title">Title (A-Z)</option>
-                <option value="author">Author (A-Z)</option>
-                <option value="date-added">Recently Added</option>
-              </select>
-            </div>
+            <ResponsiveSelect
+              id="sortBy"
+              label="Sort By"
+              value={filters.sortBy || 'relevance'}
+              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+            >
+              <option value="relevance">Relevance</option>
+              <option value="title">Title (A-Z)</option>
+              <option value="author">Author (A-Z)</option>
+              <option value="date-added">Recently Added</option>
+            </ResponsiveSelect>
           </div>
         )}
       </form>

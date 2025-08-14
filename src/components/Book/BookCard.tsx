@@ -185,12 +185,12 @@ export const BookCard: React.FC<BookCardProps> = ({
       </div>
 
       {/* Book details */}
-      <div className="p-4">
-        <h3 className="font-semibold text-text-primary mb-1 line-clamp-2" title={book.title}>
+      <div className="p-3 sm:p-4">
+        <h3 className="font-semibold text-text-primary mb-1 line-clamp-2 text-sm sm:text-base leading-tight" title={book.title}>
           {book.title}
         </h3>
         
-        <p className="text-text-secondary text-sm mb-2 line-clamp-1" title={formatAuthors(book.authors)}>
+        <p className="text-text-secondary text-xs sm:text-sm mb-2 line-clamp-1" title={formatAuthors(book.authors)}>
           {formatAuthors(book.authors)}
         </p>
 
@@ -228,7 +228,7 @@ export const BookCard: React.FC<BookCardProps> = ({
               value={book.status || ''}
               onChange={(e) => handleStatusChange(e.target.value as Book['status'])}
               onClick={(e) => e.stopPropagation()}
-              className="text-xs border border-secondary-300 rounded px-2 py-1 bg-background text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500"
+              className="text-xs border border-secondary-300 rounded px-2 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500 touch-manipulation w-full min-h-[44px] sm:min-h-[auto] sm:py-1"
             >
               <option value="">No Status</option>
               <option value="in progress">In Progress</option>

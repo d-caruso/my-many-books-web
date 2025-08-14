@@ -134,3 +134,78 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Typography System */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-text-primary font-semibold tracking-tight;
+}
+
+/* Responsive typography with fluid scaling */
+h1 { 
+  @apply text-2xl xs:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl; 
+  line-height: 1.1;
+}
+h2 { 
+  @apply text-xl xs:text-2xl sm:text-3xl lg:text-4xl xl:text-5xl; 
+  line-height: 1.2;
+}
+h3 { 
+  @apply text-lg xs:text-xl sm:text-2xl lg:text-3xl xl:text-4xl; 
+  line-height: 1.3;
+}
+h4 { 
+  @apply text-base xs:text-lg sm:text-xl lg:text-2xl xl:text-3xl; 
+  line-height: 1.4;
+}
+h5 { 
+  @apply text-sm xs:text-base sm:text-lg lg:text-xl xl:text-2xl; 
+  line-height: 1.5;
+}
+h6 { 
+  @apply text-xs xs:text-sm sm:text-base lg:text-lg xl:text-xl; 
+  line-height: 1.6;
+}
+
+/* Body text with responsive sizing */
+p, .text-body { 
+  @apply text-text-primary leading-relaxed text-sm xs:text-base sm:text-lg; 
+}
+
+/* Small text elements */
+.text-caption { 
+  @apply text-xs xs:text-sm text-text-muted leading-normal; 
+}
+
+/* Large display text */
+.text-display { 
+  @apply text-3xl xs:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-text-primary; 
+}
+
+/* Touch-friendly interactive elements */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+/* Focus states optimized for touch devices */
+.focus-visible {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+}
+
+/* Animation utilities for smooth interactions */
+.transition-smooth {
+  @apply transition-all duration-200 ease-out;
+}
+
+/* Responsive spacing utilities */
+.space-responsive {
+  @apply space-y-2 xs:space-y-3 sm:space-y-4 lg:space-y-6;
+}
+
+.gap-responsive {
+  @apply gap-2 xs:gap-3 sm:gap-4 lg:gap-6;
+}
+
+/* Container responsive padding */
+.container-padding {
+  @apply px-4 xs:px-6 sm:px-8 lg:px-12 xl:px-16;
+}

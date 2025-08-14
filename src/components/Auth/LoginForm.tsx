@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { ResponsiveInput } from '../UI/ResponsiveInput';
+import { ResponsiveButton } from '../UI/ResponsiveButton';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -49,48 +51,38 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
           </div>
         )}
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
-            placeholder="Enter your email"
-            required
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-1">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={formData.password}
-            onChange={(e) => handleInputChange('password', e.target.value)}
-            className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
-            placeholder="Enter your password"
-            required
-            disabled={loading}
-          />
-        </div>
-
-        <button
-          type="submit"
+        <ResponsiveInput
+          type="email"
+          id="email"
+          label="Email"
+          value={formData.email}
+          onChange={(e) => handleInputChange('email', e.target.value)}
+          placeholder="Enter your email"
+          required
           disabled={loading}
-          className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+        />
+
+        <ResponsiveInput
+          type="password"
+          id="password"
+          label="Password"
+          value={formData.password}
+          onChange={(e) => handleInputChange('password', e.target.value)}
+          placeholder="Enter your password"
+          required
+          disabled={loading}
+        />
+
+        <ResponsiveButton
+          type="submit"
+          variant="primary"
+          size="lg"
+          disabled={loading}
+          loading={loading}
+          className="w-full"
         >
-          {loading && (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          )}
-          <span>{loading ? 'Signing In...' : 'Sign In'}</span>
-        </button>
+          {loading ? 'Signing In...' : 'Sign In'}
+        </ResponsiveButton>
 
         <div className="text-center pt-4 border-t border-secondary-200">
           <p className="text-text-secondary text-sm">

@@ -249,12 +249,13 @@ export const BooksPage: React.FC = () => {
         
         <button
           onClick={handleAddBook}
-          className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
+          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 sm:px-6 rounded-lg font-medium transition-colors flex items-center space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          <span>Add Book</span>
+          <span className="hidden xs:inline">Add Book</span>
+          <span className="xs:hidden">Add</span>
         </button>
       </div>
 
