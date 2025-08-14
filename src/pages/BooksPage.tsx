@@ -160,21 +160,10 @@ export const BooksPage: React.FC = () => {
     setError(null);
 
     try {
-      const bookData = {
-        title: formData.title,
-        isbnCode: formData.isbnCode,
-        editionNumber: formData.editionNumber,
-        editionDate: formData.editionDate || undefined,
-        status: formData.status || undefined,
-        notes: formData.notes || undefined,
-        // Note: You'll need to handle authors and categories associations
-        // This depends on your backend API structure
-      };
-
       if (selectedBook) {
-        await bookAPI.updateBook(selectedBook.id, bookData);
+        await bookAPI.updateBook(selectedBook.id, formData);
       } else {
-        await bookAPI.createBook(bookData);
+        await bookAPI.createBook(formData);
       }
 
       // Refresh the book list

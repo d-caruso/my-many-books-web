@@ -5,6 +5,7 @@ interface ThemeContextType {
   theme: ThemeName;
   setTheme: (theme: ThemeName) => void;
   toggleTheme: () => void;
+  themes: Record<ThemeName, string>;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -28,6 +29,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return savedTheme || 'default';
   });
 
+  const themes: Record<ThemeName, string> = {
+    default: 'Default',
+    dark: 'Dark',
+    bookish: 'Bookish'
+  };
+
   useEffect(() => {
     // Apply theme to document
     document.documentElement.setAttribute('data-theme', theme);
@@ -36,14 +43,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [theme]);
 
   const toggleTheme = () => {
-    const themes: ThemeName[] = ['default', 'dark', 'bookish'];
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
+    const themeNames: ThemeName[] = ['default', 'dark', 'bookish'];
+    const currentIndex = themeNames.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themeNames.length;
+    setTheme(themeNames[nextIndex]);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, themes }}>
       {children}
     </ThemeContext.Provider>
   );

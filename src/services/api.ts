@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Book, User, Author, Category, PaginatedResponse, ApiError, BookFormData, SearchFilters, SearchResult } from '../types';
+import { Book, User, Author, Category, PaginatedResponse, ApiError, SearchFilters, SearchResult } from '../types';
+import { BookFormData } from '../components/Book/BookForm';
 
 class ApiService {
   private api: AxiosInstance;
@@ -35,23 +36,27 @@ class ApiService {
 
   // Auth methods
   async login(email: string, password: string): Promise<{ token: string; user: User }> {
-    const response = await this.api.post('/auth/login', { email, password });
+    const response = await this.api.post('/api/auth/login', { email, password });
     return response.data;
   }
 
   async register(userData: { email: string; password: string; name: string; surname: string }): Promise<{ token: string; user: User }> {
-    const response = await this.api.post('/auth/register', userData);
+    const response = await this.api.post('/api/auth/register', userData);
     return response.data;
+  }
+
+  async logout(): Promise<void> {
+    await this.api.post('/api/auth/logout');
   }
 
   // User methods
   async getCurrentUser(): Promise<User> {
-    const response = await this.api.get('/users/me');
+    const response = await this.api.get('/api/auth/me');
     return response.data;
   }
 
   async updateProfile(userData: Partial<User>): Promise<User> {
-    const response = await this.api.put('/users/me', userData);
+    const response = await this.api.put('/api/users', userData);
     return response.data;
   }
 
@@ -64,27 +69,50 @@ class ApiService {
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
 
-    const response = await this.api.get(`/books/user?${params.toString()}`);
+    const response = await this.api.get(`/api/books?${params.toString()}`);
     return response.data;
   }
 
   async getBook(id: number): Promise<Book> {
-    const response = await this.api.get(`/books/user/${id}`);
+    const response = await this.api.get(`/api/books/${id}`);
     return response.data;
   }
 
   async createBook(bookData: BookFormData): Promise<Book> {
-    const response = await this.api.post('/books/user', bookData);
+    // Transform frontend format to backend format
+    const backendData = {
+      title: bookData.title,
+      isbnCode: bookData.isbnCode,
+      editionNumber: bookData.editionNumber,
+      editionDate: bookData.editionDate,
+      status: bookData.status,
+      notes: bookData.notes,
+      authorIds: bookData.selectedAuthors?.map(author => author.id) || [],
+      categoryIds: bookData.selectedCategories || []
+    };
+    const response = await this.api.post('/api/books', backendData);
     return response.data;
   }
 
   async updateBook(id: number, bookData: Partial<BookFormData>): Promise<Book> {
-    const response = await this.api.put(`/books/user/${id}`, bookData);
+    // Transform frontend format to backend format if it includes form data
+    const backendData = bookData.selectedAuthors || bookData.selectedCategories ? {
+      title: bookData.title,
+      isbnCode: bookData.isbnCode,
+      editionNumber: bookData.editionNumber,
+      editionDate: bookData.editionDate,
+      status: bookData.status,
+      notes: bookData.notes,
+      ...(bookData.selectedAuthors && { authorIds: bookData.selectedAuthors.map(author => author.id) }),
+      ...(bookData.selectedCategories && { categoryIds: bookData.selectedCategories })
+    } : bookData;
+    
+    const response = await this.api.put(`/api/books/${id}`, backendData);
     return response.data;
   }
 
   async deleteBook(id: number): Promise<void> {
-    await this.api.delete(`/books/user/${id}`);
+    await this.api.delete(`/api/books/${id}`);
   }
 
   // Search books with enhanced filters
@@ -99,13 +127,15 @@ class ApiService {
   }): Promise<SearchResult> {
     const params = new URLSearchParams();
     
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        params.append(key, value.toString());
-      }
-    });
-
-    const response = await this.api.get(`/books/search?${params.toString()}`);
+    // Use search query for title search
+    if (searchParams.q) params.append('search', searchParams.q);
+    if (searchParams.status) params.append('status', searchParams.status);
+    if (searchParams.page) params.append('page', searchParams.page.toString());
+    if (searchParams.limit) params.append('limit', searchParams.limit.toString());
+    
+    // For author/category filtering, we'll need to implement this on the backend
+    // For now, use general search
+    const response = await this.api.get(`/api/books?${params.toString()}`);
     
     // Transform response to match SearchResult interface
     const data = response.data;
@@ -117,55 +147,49 @@ class ApiService {
     };
   }
 
-  // Get book by ISBN
-  async getBookByISBN(isbn: string): Promise<Book> {
-    const response = await this.api.get(`/books/isbn/${isbn}`);
-    return response.data;
-  }
-
   // ISBN lookup
   async searchByIsbn(isbn: string): Promise<any> {
-    const response = await this.api.get(`/books/user/search/isbn/${isbn}`);
+    const response = await this.api.get(`/api/books/search/isbn/${isbn}`);
     return response.data;
   }
 
   // Categories methods
   async getCategories(): Promise<Category[]> {
-    const response = await this.api.get('/categories');
-    return response.data;
+    const response = await this.api.get('/api/categories');
+    return response.data.categories || response.data;
   }
 
   async getCategory(id: number): Promise<Category> {
-    const response = await this.api.get(`/categories/${id}`);
+    const response = await this.api.get(`/api/categories/${id}`);
     return response.data;
   }
 
   async createCategory(categoryData: { name: string }): Promise<Category> {
-    const response = await this.api.post('/categories', categoryData);
+    const response = await this.api.post('/api/categories', categoryData);
     return response.data;
   }
 
   // Authors methods
   async getAuthors(): Promise<Author[]> {
-    const response = await this.api.get('/authors');
-    return response.data;
+    const response = await this.api.get('/api/authors');
+    return response.data.authors || response.data;
   }
 
   async searchAuthors(searchTerm: string): Promise<Author[]> {
     if (!searchTerm.trim()) {
       return [];
     }
-    const response = await this.api.get(`/authors/search?q=${encodeURIComponent(searchTerm.trim())}`);
-    return response.data;
+    const response = await this.api.get(`/api/authors?search=${encodeURIComponent(searchTerm.trim())}`);
+    return response.data.authors || response.data;
   }
 
   async getAuthor(id: number): Promise<Author> {
-    const response = await this.api.get(`/authors/${id}`);
+    const response = await this.api.get(`/api/authors/${id}`);
     return response.data;
   }
 
   async createAuthor(authorData: { name: string; surname: string; nationality?: string }): Promise<Author> {
-    const response = await this.api.post('/authors', authorData);
+    const response = await this.api.post('/api/authors', authorData);
     return response.data;
   }
 
@@ -186,7 +210,7 @@ export const apiService = new ApiService();
 // Legacy export for compatibility
 export const bookAPI = {
   searchBooks: apiService.searchBooks.bind(apiService),
-  getBookByISBN: apiService.getBookByISBN.bind(apiService),
+  searchByIsbn: apiService.searchByIsbn.bind(apiService),
   getBooks: apiService.getBooks.bind(apiService),
   getBook: apiService.getBook.bind(apiService),
   createBook: apiService.createBook.bind(apiService),
