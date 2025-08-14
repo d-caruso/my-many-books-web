@@ -5,6 +5,7 @@ import { AuthorAutocomplete } from './AuthorAutocomplete';
 import { ResponsiveInput } from '../UI/ResponsiveInput';
 import { ResponsiveSelect } from '../UI/ResponsiveSelect';
 import { ResponsiveButton } from '../UI/ResponsiveButton';
+import { MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface BookSearchFormProps {
   onSearch: (query: string, filters: SearchFilters) => void;
@@ -61,9 +62,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <MagnifyingGlassIcon className="h-5 w-5 text-text-muted" />
               </div>
               <input
                 type="text"
@@ -96,14 +95,9 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             className="text-primary-500 hover:text-primary-600 text-sm font-medium flex items-center space-x-1"
           >
             <span>Advanced Filters</span>
-            <svg 
+            <ChevronDownIcon 
               className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            />
           </button>
 
           {(Object.keys(filters).length > 0 || query || selectedAuthor) && (

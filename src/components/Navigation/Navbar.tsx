@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ThemeSelector } from '../Theme/ThemeSelector';
+import { BookOpenIcon, ChevronDownIcon, Bars3Icon } from '@heroicons/react/24/outline';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,9 +31,7 @@ export const Navbar: React.FC = () => {
             to="/" 
             className="flex items-center space-x-2 text-xl font-bold text-primary-600"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
+            <BookOpenIcon className="w-8 h-8" />
             <span>My Many Books</span>
           </Link>
 
@@ -74,9 +73,7 @@ export const Navbar: React.FC = () => {
                 <span className="hidden md:block text-sm font-medium">
                   {user?.name} {user?.surname}
                 </span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDownIcon className="w-4 h-4" />
               </button>
 
               {/* Dropdown Menu */}
@@ -102,9 +99,7 @@ export const Navbar: React.FC = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 text-text-secondary hover:text-text-primary"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <Bars3Icon className="w-6 h-6" />
             </button>
           </div>
         </div>

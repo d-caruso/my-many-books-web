@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useISBNScanner } from '../../hooks/useISBNScanner';
 import { ScanResult } from '../../types';
+import { CheckCircleIcon, StarIcon } from '@heroicons/react/24/solid';
 
 interface ISBNScannerProps {
   onScanSuccess: (result: ScanResult) => void;
@@ -117,9 +118,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
               {error ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 text-red-400">
-                    <svg className="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
+                    <CheckCircleIcon className="w-full h-full" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Camera Access Required</h3>
                   <p className="text-sm text-gray-300 mb-4">{error}</p>
@@ -133,9 +132,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
               ) : (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 animate-pulse">
-                    <svg className="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
+                    <StarIcon className="w-full h-full" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Initializing Camera</h3>
                   <p className="text-sm text-gray-300">Please wait...</p>
