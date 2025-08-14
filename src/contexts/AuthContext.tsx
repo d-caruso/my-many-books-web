@@ -71,6 +71,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuthState = async () => {
     try {
+      // Check if we're in development mode without Cognito config
+      const isDevelopment = process.env.NODE_ENV === 'development' && 
+                          !process.env.REACT_APP_COGNITO_USER_POOL_ID;
+      
+      if (isDevelopment) {
+        // Create a mock user for local development
+        const mockUser: User = {
+          id: 1,
+          email: 'demo@example.com',
+          name: 'Demo',
+          surname: 'User',
+          isActive: true,
+          creationDate: new Date().toISOString(),
+          updateDate: new Date().toISOString()
+        };
+        
+        setUser(mockUser);
+        setToken('mock-dev-token');
+        setLoading(false);
+        return;
+      }
+      
       const currentUser = await getCurrentUser();
       const session = await fetchAuthSession();
       
@@ -90,6 +112,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.log('User not authenticated:', error);
+      
+      // In development without Cognito, create mock user after auth failure
+      if (process.env.NODE_ENV === 'development') {
+        const mockUser: User = {
+          id: 1,
+          email: 'demo@example.com',
+          name: 'Demo',
+          surname: 'User',
+          isActive: true,
+          creationDate: new Date().toISOString(),
+          updateDate: new Date().toISOString()
+        };
+        
+        setUser(mockUser);
+        setToken('mock-dev-token');
+      }
     } finally {
       setLoading(false);
     }
