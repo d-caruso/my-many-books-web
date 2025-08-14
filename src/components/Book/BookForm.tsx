@@ -1,10 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Book, Author, Category } from '../../types';
+import {
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  FormControlLabel,
+  Checkbox,
+  CircularProgress,
+  Stack,
+  Divider
+} from '@mui/material';
+import {
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  Close as CloseIcon
+} from '@mui/icons-material';
+import { Book, Author } from '../../types';
 import { useCategories } from '../../hooks/useCategories';
 import { AuthorAutocomplete } from '../Search/AuthorAutocomplete';
-import { ResponsiveInput } from '../UI/ResponsiveInput';
-import { ResponsiveSelect } from '../UI/ResponsiveSelect';
-import { ResponsiveButton } from '../UI/ResponsiveButton';
 
 interface BookFormProps {
   book?: Book | null;
@@ -128,184 +147,229 @@ export const BookForm: React.FC<BookFormProps> = ({
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-lg border border-secondary-200 overflow-hidden">
-      <div className="px-6 py-4 bg-primary-50 border-b border-secondary-200">
-        <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
-      </div>
+    <Paper elevation={3} sx={{ overflow: 'hidden' }}>
+      <Box sx={{ px: 3, py: 2, bgcolor: 'primary.50', borderBottom: 1, borderColor: 'divider' }}>
+        <Typography variant="h5" fontWeight="600" color="text.primary">
+          {title}
+        </Typography>
+      </Box>
 
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        {/* Title */}
-        <ResponsiveInput
-          type="text"
-          id="title"
-          label="Title"
-          isRequired
-          value={formData.title}
-          onChange={(e) => handleInputChange('title', e.target.value)}
-          placeholder="Enter book title"
-          disabled={loading}
-          error={errors.title}
-        />
-
-        {/* ISBN */}
-        <ResponsiveInput
-          type="text"
-          id="isbnCode"
-          label="ISBN"
-          isRequired
-          value={formData.isbnCode}
-          onChange={(e) => handleInputChange('isbnCode', e.target.value)}
-          placeholder="e.g., 978-0-123-45678-9"
-          disabled={loading}
-          error={errors.isbnCode}
-          className="font-mono"
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Edition Number */}
-          <ResponsiveInput
-            type="number"
-            id="editionNumber"
-            label="Edition Number"
-            value={formData.editionNumber || ''}
-            onChange={(e) => handleInputChange('editionNumber', 
-              e.target.value ? parseInt(e.target.value) : undefined
-            )}
-            placeholder="e.g., 1"
-            min="1"
+      <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
+        <Stack spacing={3}>
+          {/* Title */}
+          <TextField
+            fullWidth
+            required
+            id="title"
+            label="Title"
+            value={formData.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+            placeholder="Enter book title"
             disabled={loading}
-            error={errors.editionNumber}
+            error={!!errors.title}
+            helperText={errors.title}
           />
 
-          {/* Edition Date */}
-          <ResponsiveInput
-            type="date"
-            id="editionDate"
-            label="Edition Date"
-            value={formData.editionDate}
-            onChange={(e) => handleInputChange('editionDate', e.target.value)}
+          {/* ISBN */}
+          <TextField
+            fullWidth
+            required
+            id="isbnCode"
+            label="ISBN"
+            value={formData.isbnCode}
+            onChange={(e) => handleInputChange('isbnCode', e.target.value)}
+            placeholder="e.g., 978-0-123-45678-9"
             disabled={loading}
+            error={!!errors.isbnCode}
+            helperText={errors.isbnCode}
+            sx={{ fontFamily: 'monospace' }}
           />
-        </div>
 
-        {/* Status */}
-        <ResponsiveSelect
-          id="status"
-          label="Reading Status"
-          value={formData.status || ''}
-          onChange={(e) => handleInputChange('status', e.target.value as Book['status'] || undefined)}
-          disabled={loading}
-        >
-          <option value="">No Status</option>
-          <option value="in progress">In Progress</option>
-          <option value="paused">Paused</option>
-          <option value="finished">Finished</option>
-        </ResponsiveSelect>
-
-        {/* Authors */}
-        <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">
-            Authors
-          </label>
-          
-          <div className="mb-3">
-            <AuthorAutocomplete
-              value={null}
-              onChange={handleAuthorAdd}
-              placeholder="Search and add authors..."
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gap: 2
+            }}
+          >
+            {/* Edition Number */}
+            <TextField
+              fullWidth
+              type="number"
+              id="editionNumber"
+              label="Edition Number"
+              value={formData.editionNumber || ''}
+              onChange={(e) => handleInputChange('editionNumber', 
+                e.target.value ? parseInt(e.target.value) : undefined
+              )}
+              placeholder="e.g., 1"
+              inputProps={{ min: 1 }}
               disabled={loading}
+              error={!!errors.editionNumber}
+              helperText={errors.editionNumber}
             />
-          </div>
 
-          {formData.selectedAuthors.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {formData.selectedAuthors.map((author) => (
-                <span
-                  key={author.id}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-700"
-                >
-                  {author.name} {author.surname}
-                  <button
-                    type="button"
-                    onClick={() => handleAuthorRemove(author.id)}
-                    className="ml-2 text-primary-500 hover:text-primary-700"
-                    disabled={loading}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+            {/* Edition Date */}
+            <TextField
+              fullWidth
+              type="date"
+              id="editionDate"
+              label="Edition Date"
+              value={formData.editionDate}
+              onChange={(e) => handleInputChange('editionDate', e.target.value)}
+              disabled={loading}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Box>
 
-        {/* Categories */}
-        <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">
-            Categories
-          </label>
-          
-          {categoriesLoading ? (
-            <div className="text-text-muted">Loading categories...</div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto border border-secondary-200 rounded-lg p-3">
-              {categories.map((category) => (
-                <label key={category.id} className="flex items-center space-x-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={formData.selectedCategories.includes(category.id)}
-                    onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
-                    className="rounded border-secondary-300 text-primary-600 focus:ring-primary-500"
+          {/* Status */}
+          <FormControl fullWidth>
+            <InputLabel id="status-label">Reading Status</InputLabel>
+            <Select
+              labelId="status-label"
+              id="status"
+              value={formData.status || ''}
+              onChange={(e) => handleInputChange('status', e.target.value as Book['status'] || undefined)}
+              disabled={loading}
+              label="Reading Status"
+            >
+              <MenuItem value="">No Status</MenuItem>
+              <MenuItem value="in progress">In Progress</MenuItem>
+              <MenuItem value="paused">Paused</MenuItem>
+              <MenuItem value="finished">Finished</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* Authors */}
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Authors
+            </Typography>
+            
+            <Box mb={2}>
+              <AuthorAutocomplete
+                value={null}
+                onChange={handleAuthorAdd}
+                placeholder="Search and add authors..."
+                disabled={loading}
+              />
+            </Box>
+
+            {formData.selectedAuthors.length > 0 && (
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                {formData.selectedAuthors.map((author) => (
+                  <Chip
+                    key={author.id}
+                    label={`${author.name} ${author.surname}`}
+                    onDelete={() => handleAuthorRemove(author.id)}
+                    deleteIcon={<CloseIcon />}
                     disabled={loading}
+                    color="primary"
+                    variant="outlined"
                   />
-                  <span className="text-text-primary">{category.name}</span>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </Stack>
+            )}
+          </Box>
 
-        {/* Notes */}
-        <div className="space-y-1">
-          <label htmlFor="notes" className="block text-sm font-medium text-text-secondary">
-            Notes
-          </label>
-          <textarea
+          {/* Categories */}
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Categories
+            </Typography>
+            
+            {categoriesLoading ? (
+              <Box display="flex" alignItems="center" gap={1}>
+                <CircularProgress size={16} />
+                <Typography variant="body2" color="text.secondary">
+                  Loading categories...
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+                  gap: 1,
+                  maxHeight: 200,
+                  overflowY: 'auto',
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 2
+                }}
+              >
+                {categories.map((category) => (
+                  <FormControlLabel
+                    key={category.id}
+                    control={
+                      <Checkbox
+                        checked={formData.selectedCategories.includes(category.id)}
+                        onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
+                        disabled={loading}
+                        size="small"
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        {category.name}
+                      </Typography>
+                    }
+                  />
+                ))}
+              </Box>
+            )}
+          </Box>
+
+          {/* Notes */}
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
             id="notes"
+            label="Notes"
             value={formData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
-            rows={4}
-            className="w-full px-3 py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-base sm:text-sm min-h-[44px] touch-manipulation transition-colors duration-200 bg-background text-text-primary hover:border-secondary-400 resize-vertical"
             placeholder="Add any notes about this book..."
             disabled={loading}
           />
-        </div>
 
-        {/* Form Actions */}
-        <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-end space-y-3 xs:space-y-0 xs:space-x-4 pt-6 border-t border-secondary-200">
-          <ResponsiveButton
-            type="button"
-            variant="secondary"
-            size="lg"
-            onClick={onCancel}
-            disabled={loading}
-          >
-            Cancel
-          </ResponsiveButton>
+          <Divider />
           
-          <ResponsiveButton
-            type="submit"
-            variant="primary"
-            size="lg"
-            disabled={loading}
-            loading={loading}
+          {/* Form Actions */}
+          <Stack 
+            direction={{ xs: 'column', sm: 'row' }} 
+            spacing={2} 
+            justifyContent="flex-end"
+            alignItems="stretch"
           >
-            {book ? 'Update Book' : 'Add Book'}
-          </ResponsiveButton>
-        </div>
-      </form>
-    </div>
+            <Button
+              type="button"
+              variant="outlined"
+              size="large"
+              onClick={onCancel}
+              disabled={loading}
+              startIcon={<CancelIcon />}
+              sx={{ minWidth: 120 }}
+            >
+              Cancel
+            </Button>
+            
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+              sx={{ minWidth: 140 }}
+            >
+              {book ? 'Update Book' : 'Add Book'}
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+    </Paper>
   );
 };

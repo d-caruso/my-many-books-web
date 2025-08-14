@@ -1,4 +1,13 @@
 import React from 'react';
+import {
+  Paper,
+  Typography,
+  Button,
+  Box
+} from '@mui/material';
+import {
+  GetApp as InstallIcon
+} from '@mui/icons-material';
 import { usePWA } from '../../hooks/usePWA';
 
 export const InstallPrompt: React.FC = () => {
@@ -9,23 +18,48 @@ export const InstallPrompt: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 bg-primary-500 text-white p-4 rounded-lg shadow-lg z-50 md:left-auto md:max-w-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex-1 pr-4">
-          <h3 className="font-semibold text-sm">Install App</h3>
-          <p className="text-xs opacity-90">
+    <Paper
+      elevation={6}
+      sx={{
+        position: 'fixed',
+        bottom: 16,
+        left: 16,
+        right: 16,
+        zIndex: 1300,
+        bgcolor: 'primary.main',
+        color: 'primary.contrastText',
+        p: 2,
+        '@media (min-width: 768px)': {
+          left: 'auto',
+          maxWidth: 320
+        }
+      }}
+    >
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box flex={1} pr={2}>
+          <Typography variant="subtitle2" fontWeight="600">
+            Install App
+          </Typography>
+          <Typography variant="caption" sx={{ opacity: 0.9 }}>
             Add My Many Books to your home screen for quick access
-          </p>
-        </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={installApp}
-            className="bg-white text-primary-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100 transition-colors"
-          >
-            Install
-          </button>
-        </div>
-      </div>
-    </div>
+          </Typography>
+        </Box>
+        <Button
+          onClick={installApp}
+          variant="contained"
+          size="small"
+          startIcon={<InstallIcon />}
+          sx={{
+            bgcolor: 'background.paper',
+            color: 'primary.main',
+            '&:hover': {
+              bgcolor: 'grey.100'
+            }
+          }}
+        >
+          Install
+        </Button>
+      </Box>
+    </Paper>
   );
 };

@@ -10,8 +10,7 @@ import {
   MenuItem,
   Collapse,
   Typography,
-  InputAdornment,
-  IconButton
+  InputAdornment
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -37,7 +36,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
   const [filters, setFilters] = useState<SearchFilters>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
-  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
+  const { categories, loading: categoriesLoading } = useCategories();
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -207,11 +206,10 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
                   <Select
                     labelId="sortBy-label"
                     id="sortBy"
-                    value={filters.sortBy || 'relevance'}
+                    value={filters.sortBy || 'title'}
                     onChange={(e) => handleFilterChange('sortBy', e.target.value)}
                     label="Sort By"
                   >
-                    <MenuItem value="relevance">Relevance</MenuItem>
                     <MenuItem value="title">Title (A-Z)</MenuItem>
                     <MenuItem value="author">Author (A-Z)</MenuItem>
                     <MenuItem value="date-added">Recently Added</MenuItem>

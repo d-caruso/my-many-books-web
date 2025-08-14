@@ -126,6 +126,84 @@ class ApiService {
     ]);
   }
 
+  private getMockSearchResults(searchParams: {
+    q?: string;
+    page?: number;
+    limit?: number;
+    status?: string;
+    sortBy?: string;
+    authorId?: number;
+    categoryId?: number;
+  }): Promise<SearchResult> {
+    const mockBooksData = this.getMockBooks();
+    return mockBooksData.then(data => {
+      let filteredBooks = data.books || [];
+      
+      // Filter by search query
+      if (searchParams.q) {
+        const query = searchParams.q.toLowerCase();
+        filteredBooks = filteredBooks.filter(book => 
+          book.title.toLowerCase().includes(query) ||
+          book.authors?.some(author => 
+            `${author.name} ${author.surname}`.toLowerCase().includes(query)
+          ) ||
+          book.isbnCode.includes(query)
+        );
+      }
+      
+      // Filter by status
+      if (searchParams.status) {
+        filteredBooks = filteredBooks.filter(book => book.status === searchParams.status);
+      }
+      
+      // Filter by author
+      if (searchParams.authorId) {
+        filteredBooks = filteredBooks.filter(book => 
+          book.authors?.some(author => author.id === searchParams.authorId)
+        );
+      }
+      
+      // Filter by category
+      if (searchParams.categoryId) {
+        filteredBooks = filteredBooks.filter(book => 
+          book.categories?.some(category => category.id === searchParams.categoryId)
+        );
+      }
+      
+      // Sort results
+      if (searchParams.sortBy) {
+        switch (searchParams.sortBy) {
+          case 'title':
+            filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+          case 'author':
+            filteredBooks.sort((a, b) => {
+              const aAuthor = a.authors?.[0] ? `${a.authors[0].name} ${a.authors[0].surname}` : '';
+              const bAuthor = b.authors?.[0] ? `${b.authors[0].name} ${b.authors[0].surname}` : '';
+              return aAuthor.localeCompare(bAuthor);
+            });
+            break;
+          case 'date-added':
+            filteredBooks.sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime());
+            break;
+        }
+      }
+      
+      const page = searchParams.page || 1;
+      const limit = searchParams.limit || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+      
+      return {
+        books: paginatedBooks,
+        total: filteredBooks.length,
+        hasMore: endIndex < filteredBooks.length,
+        page
+      };
+    });
+  }
+
   // Book methods
   async getBooks(filters?: SearchFilters): Promise<PaginatedResponse<Book>> {
     // In development mode, return mock data
@@ -196,6 +274,11 @@ class ApiService {
     authorId?: number;
     categoryId?: number;
   }): Promise<SearchResult> {
+    // In development mode, return mock data
+    if (process.env.NODE_ENV === 'development' && !process.env.REACT_APP_API_BASE_URL) {
+      return this.getMockSearchResults(searchParams);
+    }
+    
     const params = new URLSearchParams();
     
     // Use search query for title search

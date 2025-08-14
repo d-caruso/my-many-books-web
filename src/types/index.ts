@@ -103,7 +103,7 @@ export interface SearchFilters {
   status?: Book['status'];
   authorId?: number;
   categoryId?: number;
-  sortBy?: 'relevance' | 'title' | 'author' | 'date-added';
+  sortBy?: 'title' | 'author' | 'date-added';
   page?: number;
   limit?: number;
 }
