@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { SearchFilters } from '../../types';
+import { SearchFilters, Author } from '../../types';
 import { useCategories } from '../../hooks/useCategories';
+import { AuthorAutocomplete } from './AuthorAutocomplete';
 
 interface BookSearchFormProps {
   onSearch: (query: string, filters: SearchFilters) => void;
@@ -16,6 +17,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
   const [query, setQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<SearchFilters>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
 
   useEffect(() => {
@@ -34,9 +36,15 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
     }));
   };
 
+  const handleAuthorChange = (author: Author | null) => {
+    setSelectedAuthor(author);
+    handleFilterChange('authorId', author?.id);
+  };
+
   const clearFilters = () => {
     setFilters({});
     setQuery('');
+    setSelectedAuthor(null);
   };
 
   return (
@@ -100,7 +108,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             </svg>
           </button>
 
-          {(Object.keys(filters).length > 0 || query) && (
+          {(Object.keys(filters).length > 0 || query || selectedAuthor) && (
             <button
               type="button"
               onClick={clearFilters}
@@ -114,6 +122,19 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
         {/* Advanced filters */}
         {showAdvanced && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-secondary-200">
+            {/* Author search */}
+            <div>
+              <label htmlFor="author" className="block text-sm font-medium text-text-secondary mb-1">
+                Author
+              </label>
+              <AuthorAutocomplete
+                value={selectedAuthor}
+                onChange={handleAuthorChange}
+                placeholder="Search by author name..."
+                disabled={loading}
+              />
+            </div>
+
             {/* Category filter */}
             <div>
               <label htmlFor="categoryId" className="block text-sm font-medium text-text-secondary mb-1">

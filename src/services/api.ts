@@ -151,6 +151,14 @@ class ApiService {
     return response.data;
   }
 
+  async searchAuthors(searchTerm: string): Promise<Author[]> {
+    if (!searchTerm.trim()) {
+      return [];
+    }
+    const response = await this.api.get(`/authors/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    return response.data;
+  }
+
   async getAuthor(id: number): Promise<Author> {
     const response = await this.api.get(`/authors/${id}`);
     return response.data;
@@ -194,6 +202,7 @@ export const categoryAPI = {
 
 export const authorAPI = {
   getAuthors: apiService.getAuthors.bind(apiService),
+  searchAuthors: apiService.searchAuthors.bind(apiService),
   getAuthor: apiService.getAuthor.bind(apiService),
   createAuthor: apiService.createAuthor.bind(apiService),
 };
