@@ -1,4 +1,23 @@
 import React from 'react';
+import {
+  Card,
+  CardContent,
+  CardActions,
+  CardMedia,
+  Typography,
+  Chip,
+  IconButton,
+  MenuItem,
+  Select,
+  FormControl,
+  Box,
+  Stack
+} from '@mui/material';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  MenuBook as BookIcon
+} from '@mui/icons-material';
 import { Book } from '../../types';
 
 interface BookCardProps {
@@ -30,13 +49,13 @@ export const BookCard: React.FC<BookCardProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'finished':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       case 'in progress':
-        return 'bg-blue-100 text-blue-800';
+        return 'primary';
       case 'paused':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'warning';
       default:
-        return 'bg-secondary-100 text-text-muted';
+        return 'default';
     }
   };
 
@@ -61,199 +80,299 @@ export const BookCard: React.FC<BookCardProps> = ({
 
   if (compact) {
     return (
-      <div 
-        className={`bg-surface rounded-lg shadow-sm border border-secondary-200 p-4 hover:shadow-md transition-shadow ${
-          onClick ? 'cursor-pointer' : ''
-        }`}
+      <Card 
+        sx={{ 
+          cursor: onClick ? 'pointer' : 'default',
+          '&:hover': {
+            boxShadow: 2
+          }
+        }}
         onClick={() => onClick?.(book)}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-text-primary truncate" title={book.title}>
-              {book.title}
-            </h3>
-            <p className="text-sm text-text-secondary truncate" title={formatAuthors(book.authors)}>
-              {formatAuthors(book.authors)}
-            </p>
-            {book.status && (
-              <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-1 ${getStatusColor(book.status)}`}>
-                {formatStatus(book.status)}
-              </span>
+        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box flex={1} minWidth={0}>
+              <Typography 
+                variant="subtitle2" 
+                component="h3" 
+                fontWeight="600"
+                noWrap
+                title={book.title}
+              >
+                {book.title}
+              </Typography>
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                noWrap
+                title={formatAuthors(book.authors)}
+              >
+                {formatAuthors(book.authors)}
+              </Typography>
+              {book.status && (
+                <Chip
+                  label={formatStatus(book.status)}
+                  size="small"
+                  color={getStatusColor(book.status) as any}
+                  sx={{ mt: 0.5, height: 20 }}
+                />
+              )}
+            </Box>
+            
+            {showActions && (
+              <Stack direction="row" spacing={0.5} ml={1}>
+                {onEdit && (
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(book);
+                    }}
+                    title="Edit book"
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                )}
+                
+                {onDelete && (
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
+                        onDelete(book.id);
+                      }
+                    }}
+                    title="Delete book"
+                    color="error"
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Stack>
             )}
-          </div>
-          
-          {showActions && (
-            <div className="ml-4 flex space-x-2">
-              {onEdit && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(book);
-                  }}
-                  className="text-text-muted hover:text-primary-500 transition-colors"
-                  title="Edit book"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </button>
-              )}
-              
-              {onDelete && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
-                      onDelete(book.id);
-                    }
-                  }}
-                  className="text-text-muted hover:text-semantic-error transition-colors"
-                  title="Delete book"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+          </Box>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div 
-      className={`bg-surface rounded-lg shadow-sm border border-secondary-200 overflow-hidden hover:shadow-md transition-shadow ${
-        onClick ? 'cursor-pointer' : ''
-      }`}
+    <Card 
+      sx={{ 
+        cursor: onClick ? 'pointer' : 'default',
+        '&:hover': {
+          boxShadow: 2
+        },
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      }}
       onClick={() => onClick?.(book)}
     >
-      {/* Book cover placeholder */}
-      <div className="aspect-[3/4] bg-secondary-100 relative">
-        <div className="w-full h-full flex items-center justify-center text-text-muted">
-          <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        </div>
+      {/* Book cover */}
+      <Box position="relative">
+        <CardMedia
+          sx={{
+            height: 200,
+            bgcolor: 'grey.100',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'grey.500'
+          }}
+        >
+          <BookIcon sx={{ fontSize: 48 }} />
+        </CardMedia>
         
         {/* Status badge */}
         {book.status && (
-          <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(book.status)}`}>
-            {formatStatus(book.status)}
-          </div>
+          <Box position="absolute" top={8} right={8}>
+            <Chip
+              label={formatStatus(book.status)}
+              size="small"
+              color={getStatusColor(book.status) as any}
+            />
+          </Box>
         )}
 
         {/* Actions overlay */}
         {showActions && (
-          <div className="absolute top-2 left-2 opacity-0 hover:opacity-100 transition-opacity">
-            <div className="flex space-x-1">
+          <Box 
+            position="absolute" 
+            top={8} 
+            left={8}
+            sx={{
+              opacity: 0,
+              '&:hover': { opacity: 1 },
+              transition: 'opacity 0.2s'
+            }}
+          >
+            <Stack direction="row" spacing={0.5}>
               {onEdit && (
-                <button
+                <IconButton
+                  size="small"
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit(book);
                   }}
-                  className="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
+                  sx={{
+                    bgcolor: 'rgba(0,0,0,0.5)',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'rgba(0,0,0,0.7)'
+                    }
+                  }}
                   title="Edit book"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </button>
+                  <EditIcon fontSize="small" />
+                </IconButton>
               )}
               
               {onDelete && (
-                <button
+                <IconButton
+                  size="small"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
                       onDelete(book.id);
                     }
                   }}
-                  className="bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-red-500 transition-all"
+                  sx={{
+                    bgcolor: 'rgba(0,0,0,0.5)',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'error.main'
+                    }
+                  }}
                   title="Delete book"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
               )}
-            </div>
-          </div>
+            </Stack>
+          </Box>
         )}
-      </div>
+      </Box>
 
-      {/* Book details */}
-      <div className="p-3 sm:p-4">
-        <h3 className="font-semibold text-text-primary mb-1 line-clamp-2 text-sm sm:text-base leading-tight" title={book.title}>
+      <CardContent sx={{ flexGrow: 1, p: { xs: 2, sm: 2.5 } }}>
+        <Typography 
+          variant="subtitle2" 
+          component="h3" 
+          fontWeight="600"
+          gutterBottom
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            fontSize: { xs: '0.875rem', sm: '1rem' }
+          }}
+          title={book.title}
+        >
           {book.title}
-        </h3>
+        </Typography>
         
-        <p className="text-text-secondary text-xs sm:text-sm mb-2 line-clamp-1" title={formatAuthors(book.authors)}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            mb: 1,
+            fontSize: { xs: '0.75rem', sm: '0.875rem' }
+          }}
+          title={formatAuthors(book.authors)}
+        >
           {formatAuthors(book.authors)}
-        </p>
+        </Typography>
 
         {/* Edition info */}
-        <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+        <Box display="flex" justifyContent="space-between" mb={1}>
           {book.editionNumber && (
-            <span>Edition {book.editionNumber}</span>
+            <Typography variant="caption" color="text.disabled">
+              Edition {book.editionNumber}
+            </Typography>
           )}
           {book.editionDate && (
-            <span>{new Date(book.editionDate).getFullYear()}</span>
+            <Typography variant="caption" color="text.disabled">
+              {new Date(book.editionDate).getFullYear()}
+            </Typography>
           )}
-        </div>
+        </Box>
 
         {/* Categories */}
         {book.categories && book.categories.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {book.categories.slice(0, 2).map((category) => (
-              <span 
-                key={category.id}
-                className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full"
-              >
-                {category.name}
-              </span>
-            ))}
-            {book.categories.length > 2 && (
-              <span className="text-xs text-text-muted">+{book.categories.length - 2} more</span>
-            )}
-          </div>
-        )}
-
-        {/* Status change dropdown */}
-        {onStatusChange && (
-          <div className="mb-3">
-            <select
-              value={book.status || ''}
-              onChange={(e) => handleStatusChange(e.target.value as Book['status'])}
-              onClick={(e) => e.stopPropagation()}
-              className="text-xs border border-secondary-300 rounded px-2 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500 touch-manipulation w-full min-h-[44px] sm:min-h-[auto] sm:py-1"
-            >
-              <option value="">No Status</option>
-              <option value="in progress">In Progress</option>
-              <option value="paused">Paused</option>
-              <option value="finished">Finished</option>
-            </select>
-          </div>
+          <Box mb={2}>
+            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+              {book.categories.slice(0, 2).map((category) => (
+                <Chip
+                  key={category.id}
+                  label={category.name}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  sx={{ fontSize: '0.7rem', height: 20 }}
+                />
+              ))}
+              {book.categories.length > 2 && (
+                <Typography variant="caption" color="text.disabled">
+                  +{book.categories.length - 2} more
+                </Typography>
+              )}
+            </Stack>
+          </Box>
         )}
 
         {/* Notes preview */}
         {book.notes && (
-          <div className="mb-2">
-            <p className="text-xs text-text-muted line-clamp-2" title={book.notes}>
-              {book.notes}
-            </p>
-          </div>
+          <Typography 
+            variant="caption" 
+            color="text.disabled"
+            sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              mb: 1
+            }}
+            title={book.notes}
+          >
+            {book.notes}
+          </Typography>
         )}
 
         {/* ISBN */}
         {book.isbnCode && (
-          <div className="text-xs text-text-muted font-mono">
+          <Typography variant="caption" color="text.disabled" sx={{ fontFamily: 'monospace' }}>
             ISBN: {book.isbnCode}
-          </div>
+          </Typography>
         )}
-      </div>
-    </div>
+      </CardContent>
+
+      {/* Status change and actions */}
+      {(onStatusChange || showActions) && (
+        <CardActions sx={{ pt: 0, px: { xs: 2, sm: 2.5 }, pb: { xs: 2, sm: 2.5 } }}>
+          {onStatusChange && (
+            <FormControl size="small" sx={{ minWidth: 120, flexGrow: 1 }}>
+              <Select
+                value={book.status || ''}
+                onChange={(e) => handleStatusChange(e.target.value as Book['status'])}
+                onClick={(e) => e.stopPropagation()}
+                displayEmpty
+                sx={{ fontSize: '0.875rem' }}
+              >
+                <MenuItem value="">No Status</MenuItem>
+                <MenuItem value="in progress">In Progress</MenuItem>
+                <MenuItem value="paused">Paused</MenuItem>
+                <MenuItem value="finished">Finished</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+        </CardActions>
+      )}
+    </Card>
   );
 };

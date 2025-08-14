@@ -333,15 +333,16 @@ export const BooksPage: React.FC = () => {
 
       {/* Load more */}
       {hasMore && (
-        <div className="mt-8 text-center">
-          <button
+        <Box mt={4} textAlign="center">
+          <Button
+            variant="contained"
             onClick={loadMore}
             disabled={searchLoading}
-            className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors"
+            size="large"
           >
             {searchLoading ? 'Loading...' : 'Load More Books'}
-          </button>
-        </div>
+          </Button>
+        </Box>
       )}
     </div>
   );

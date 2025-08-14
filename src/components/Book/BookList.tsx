@@ -1,4 +1,18 @@
 import React from 'react';
+import {
+  Box,
+  Grid,
+  Stack,
+  Typography,
+  CircularProgress,
+  Alert,
+  AlertTitle,
+  Paper
+} from '@mui/material';
+import {
+  Warning as WarningIcon,
+  MenuBook as BookIcon
+} from '@mui/icons-material';
 import { Book } from '../../types';
 import { BookCard } from './BookCard';
 
@@ -29,40 +43,44 @@ export const BookList: React.FC<BookListProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-text-secondary">Loading books...</p>
-      </div>
+      <Box display="flex" flexDirection="column" alignItems="center" py={6}>
+        <CircularProgress size={32} sx={{ mb: 2 }} />
+        <Typography variant="body2" color="text.secondary">
+          Loading books...
+        </Typography>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <div className="text-red-600 mb-2">
-          <span style={{fontSize: '32px'}}>⚠️</span>
-        </div>
-        <h3 className="text-lg font-medium text-red-800 mb-1">Error Loading Books</h3>
-        <p className="text-red-600">{error}</p>
-      </div>
+      <Alert severity="error" sx={{ textAlign: 'center', py: 3 }}>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <WarningIcon sx={{ fontSize: 32, mb: 1 }} />
+          <AlertTitle>Error Loading Books</AlertTitle>
+          {error}
+        </Box>
+      </Alert>
     );
   }
 
   if (books.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-text-muted mb-4">
-          <span style={{fontSize: '64px', display: 'block', marginBottom: '16px'}}>📚</span>
-        </div>
-        <h3 className="text-lg font-medium text-text-primary mb-2">{emptyMessage}</h3>
-        <p className="text-text-secondary">Start building your library by adding your first book</p>
-      </div>
+      <Box display="flex" flexDirection="column" alignItems="center" py={6}>
+        <BookIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+        <Typography variant="h6" color="text.primary" gutterBottom>
+          {emptyMessage}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Start building your library by adding your first book
+        </Typography>
+      </Box>
     );
   }
 
   if (viewMode === 'list') {
     return (
-      <div className="space-y-4">
+      <Stack spacing={2}>
         {books.map((book) => (
           <BookCard
             key={book.id}
@@ -75,12 +93,24 @@ export const BookList: React.FC<BookListProps> = ({
             compact={true}
           />
         ))}
-      </div>
+      </Stack>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-7 gap-4 sm:gap-6">
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+          md: 'repeat(3, 1fr)',
+          lg: 'repeat(4, 1fr)',
+          xl: 'repeat(5, 1fr)'
+        },
+        gap: { xs: 2, sm: 3 }
+      }}
+    >
       {books.map((book) => (
         <BookCard
           key={book.id}
@@ -93,6 +123,6 @@ export const BookList: React.FC<BookListProps> = ({
           compact={false}
         />
       ))}
-    </div>
+    </Box>
   );
 };

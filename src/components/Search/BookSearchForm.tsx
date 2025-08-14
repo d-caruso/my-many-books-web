@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Paper,
+  TextField,
+  Button,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Collapse,
+  Typography,
+  InputAdornment,
+  IconButton
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  ExpandMore as ExpandMoreIcon,
+  Clear as ClearIcon
+} from '@mui/icons-material';
 import { SearchFilters, Author } from '../../types';
 import { useCategories } from '../../hooks/useCategories';
 import { AuthorAutocomplete } from './AuthorAutocomplete';
-import { ResponsiveInput } from '../UI/ResponsiveInput';
-import { ResponsiveSelect } from '../UI/ResponsiveSelect';
-import { ResponsiveButton } from '../UI/ResponsiveButton';
 
 interface BookSearchFormProps {
   onSearch: (query: string, filters: SearchFilters) => void;
@@ -51,131 +67,161 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-secondary-200 p-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <Paper sx={{ p: 3 }}>
+      <Box component="form" onSubmit={handleSubmit}>
         {/* Main search input */}
-        <div className="flex space-x-2">
-          <div className="flex-1">
-            <label htmlFor="search" className="sr-only">
-              Search books
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-text-muted" style={{fontSize: '20px'}}>🔍</span>
-              </div>
-              <input
-                type="text"
-                id="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by title, author, ISBN..."
-                className="block w-full pl-10 pr-3 py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-background text-text-primary text-base sm:text-sm min-h-[44px] touch-manipulation transition-colors duration-200 hover:border-secondary-400"
-                disabled={loading}
-              />
-            </div>
-          </div>
-          
-          <ResponsiveButton
-            type="submit"
-            variant="primary"
-            size="md"
+        <Box display="flex" gap={2} mb={2}>
+          <TextField
+            fullWidth
+            id="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by title, author, ISBN..."
             disabled={loading}
-            loading={loading}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+          />
+          
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={loading}
+            sx={{ minWidth: 120 }}
           >
             {loading ? 'Searching...' : 'Search'}
-          </ResponsiveButton>
-        </div>
+          </Button>
+        </Box>
 
         {/* Advanced filters toggle */}
-        <div className="flex items-center justify-between">
-          <button
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-primary-500 hover:text-primary-600 text-sm font-medium flex items-center space-x-1"
+            color="primary"
+            size="small"
+            endIcon={
+              <ExpandMoreIcon
+                sx={{
+                  transform: showAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s'
+                }}
+              />
+            }
           >
-            <span>Advanced Filters</span>
-            <span 
-              className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
-              style={{fontSize: '16px', display: 'inline-block'}}
-            >
-              ▼
-            </span>
-          </button>
+            Advanced Filters
+          </Button>
 
           {(Object.keys(filters).length > 0 || query || selectedAuthor) && (
-            <button
+            <Button
               type="button"
               onClick={clearFilters}
-              className="text-text-muted hover:text-text-secondary text-sm"
+              size="small"
+              color="inherit"
+              startIcon={<ClearIcon />}
             >
               Clear all
-            </button>
+            </Button>
           )}
-        </div>
+        </Box>
 
         {/* Advanced filters */}
-        {showAdvanced && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-secondary-200">
-            {/* Author search */}
-            <div>
-              <label htmlFor="author" className="block text-sm font-medium text-text-secondary mb-1">
-                Author
-              </label>
-              <AuthorAutocomplete
-                value={selectedAuthor}
-                onChange={handleAuthorChange}
-                placeholder="Search by author name..."
-                disabled={loading}
-              />
-            </div>
-
-            {/* Category filter */}
-            <ResponsiveSelect
-              id="categoryId"
-              label="Category"
-              value={filters.categoryId || ''}
-              onChange={(e) => handleFilterChange('categoryId', e.target.value ? parseInt(e.target.value) : undefined)}
-              disabled={categoriesLoading}
-              error={categoriesError || undefined}
+        <Collapse in={showAdvanced}>
+          <Box sx={{ pt: 2, borderTop: 1, borderColor: 'divider' }}>
+            <Box 
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(4, 1fr)'
+                },
+                gap: 2
+              }}
             >
-              <option value="">
-                {categoriesLoading ? 'Loading categories...' : 'All Categories'}
-              </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </ResponsiveSelect>
+              {/* Author search */}
+              <Box>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Author
+                </Typography>
+                <AuthorAutocomplete
+                  value={selectedAuthor}
+                  onChange={handleAuthorChange}
+                  placeholder="Search by author name..."
+                  disabled={loading}
+                />
+              </Box>
 
-            {/* Book status */}
-            <ResponsiveSelect
-              id="status"
-              label="Reading Status"
-              value={filters.status || ''}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-            >
-              <option value="">Any Status</option>
-              <option value="in progress">In Progress</option>
-              <option value="paused">Paused</option>
-              <option value="finished">Finished</option>
-            </ResponsiveSelect>
+              {/* Category filter */}
+              <Box>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="category-label">Category</InputLabel>
+                  <Select
+                    labelId="category-label"
+                    id="categoryId"
+                    value={filters.categoryId || ''}
+                    onChange={(e) => handleFilterChange('categoryId', e.target.value ? parseInt(e.target.value as unknown as string) : undefined)}
+                    disabled={categoriesLoading}
+                    label="Category"
+                  >
+                    <MenuItem value="">
+                      {categoriesLoading ? 'Loading categories...' : 'All Categories'}
+                    </MenuItem>
+                    {categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
 
-            {/* Sort by */}
-            <ResponsiveSelect
-              id="sortBy"
-              label="Sort By"
-              value={filters.sortBy || 'relevance'}
-              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-            >
-              <option value="relevance">Relevance</option>
-              <option value="title">Title (A-Z)</option>
-              <option value="author">Author (A-Z)</option>
-              <option value="date-added">Recently Added</option>
-            </ResponsiveSelect>
-          </div>
-        )}
-      </form>
-    </div>
+              {/* Book status */}
+              <Box>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="status-label">Reading Status</InputLabel>
+                  <Select
+                    labelId="status-label"
+                    id="status"
+                    value={filters.status || ''}
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                    label="Reading Status"
+                  >
+                    <MenuItem value="">Any Status</MenuItem>
+                    <MenuItem value="in progress">In Progress</MenuItem>
+                    <MenuItem value="paused">Paused</MenuItem>
+                    <MenuItem value="finished">Finished</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* Sort by */}
+              <Box>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="sortBy-label">Sort By</InputLabel>
+                  <Select
+                    labelId="sortBy-label"
+                    id="sortBy"
+                    value={filters.sortBy || 'relevance'}
+                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                    label="Sort By"
+                  >
+                    <MenuItem value="relevance">Relevance</MenuItem>
+                    <MenuItem value="title">Title (A-Z)</MenuItem>
+                    <MenuItem value="author">Author (A-Z)</MenuItem>
+                    <MenuItem value="date-added">Recently Added</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
+          </Box>
+        </Collapse>
+      </Box>
+    </Paper>
   );
 };
