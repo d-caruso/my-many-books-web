@@ -1,4 +1,9 @@
 import React, { useRef, useEffect } from 'react';
+import {
+  Close as CloseIcon,
+  SwapHoriz as SwapIcon,
+  Edit as EditIcon
+} from '@mui/icons-material';
 import { useISBNScanner } from '../../hooks/useISBNScanner';
 import { ScanResult } from '../../types';
 
@@ -66,9 +71,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
               onClick={onClose}
               className="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <CloseIcon sx={{ fontSize: 24 }} />
             </button>
           </div>
         </div>
@@ -152,9 +155,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
                   className="p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors text-white"
                   title="Switch Camera"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
+                  <SwapIcon sx={{ fontSize: 24 }} />
                 </button>
               )}
 
@@ -173,9 +174,7 @@ export const ISBNScanner: React.FC<ISBNScannerProps> = ({
                 className="p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors text-white"
                 title="Enter ISBN Manually"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
+                <EditIcon sx={{ fontSize: 24 }} />
               </button>
             </div>
           </div>

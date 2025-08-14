@@ -244,10 +244,6 @@ export const BookForm: React.FC<BookFormProps> = ({
 
           {/* Authors */}
           <Box>
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-              Authors
-            </Typography>
-            
             <Box mb={2}>
               <AuthorAutocomplete
                 value={null}

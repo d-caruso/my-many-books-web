@@ -120,6 +120,7 @@ export const AuthorAutocomplete: React.FC<AuthorAutocompleteProps> = ({
       renderInput={(params) => (
         <TextField
           {...params}
+          label="Authors"
           placeholder={placeholder}
           size="small"
           disabled={disabled}
