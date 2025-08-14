@@ -1,13 +1,48 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Amplify } from 'aws-amplify';
+import { signIn, signUp, signOut, getCurrentUser, fetchAuthSession } from '@aws-amplify/auth';
 import { User } from '../types';
-import { apiService } from '../services/api';
+
+// Configure Amplify (this should ideally be done in index.tsx or App.tsx)
+Amplify.configure({
+  Auth: {
+    Cognito: {
+      userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID || '',
+      userPoolClientId: process.env.REACT_APP_COGNITO_USER_POOL_CLIENT_ID || '',
+      identityPoolId: process.env.REACT_APP_COGNITO_IDENTITY_POOL_ID || '', // Required but can be empty
+      loginWith: {
+        email: true,
+      },
+      signUpVerificationMethod: 'code',
+      userAttributes: {
+        email: {
+          required: true,
+        },
+        given_name: {
+          required: true,
+        },
+        family_name: {
+          required: true,
+        },
+      },
+      allowGuestAccess: false,
+      passwordFormat: {
+        minLength: 8,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireNumbers: true,
+      },
+    }
+  }
+});
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (token: string, userData: User) => void;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: { email: string; password: string; name: string; surname: string }) => Promise<void>;
+  logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
 }
 
@@ -31,42 +66,96 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('authToken');
-      
-      if (storedToken) {
-        try {
-          const userData = await apiService.getCurrentUser();
-          setToken(storedToken);
-          setUser(userData);
-        } catch (error) {
-          // Token is invalid, remove it
-          localStorage.removeItem('authToken');
-          console.error('Token validation failed:', error);
-        }
-      }
-      
-      setLoading(false);
-    };
-
-    initializeAuth();
+    checkAuthState();
   }, []);
 
-  const login = (newToken: string, userData: User) => {
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem('authToken', newToken);
+  const checkAuthState = async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      const session = await fetchAuthSession();
+      
+      if (currentUser && session.tokens?.accessToken) {
+        const userData: User = {
+          id: parseInt(currentUser.userId),
+          email: currentUser.signInDetails?.loginId || '',
+          name: currentUser.signInDetails?.loginId || '', // Will be updated when we get user attributes
+          surname: '',
+          isActive: true,
+          creationDate: new Date().toISOString(),
+          updateDate: new Date().toISOString()
+        };
+
+        setUser(userData);
+        setToken(session.tokens.accessToken.toString());
+      }
+    } catch (error) {
+      console.log('User not authenticated:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const signInOutput = await signIn({
+        username: email,
+        password: password,
+      });
+
+      if (signInOutput.isSignedIn) {
+        await checkAuthState();
+      } else {
+        throw new Error('Sign in incomplete');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw new Error(error.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (userData: { email: string; password: string; name: string; surname: string }) => {
+    try {
+      setLoading(true);
+      const signUpOutput = await signUp({
+        username: userData.email,
+        password: userData.password,
+        options: {
+          userAttributes: {
+            email: userData.email,
+            given_name: userData.name,
+            family_name: userData.surname,
+          },
+        },
+      });
+
+      if (signUpOutput.isSignUpComplete) {
+        // Auto sign in after successful registration
+        await login(userData.email, userData.password);
+      } else {
+        // Handle confirmation required case
+        throw new Error('Email confirmation required');
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      throw new Error(error.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
     try {
-      await apiService.logout();
+      await signOut();
+      setUser(null);
+      setToken(null);
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      setToken(null);
+      // Clear local state even if logout fails
       setUser(null);
-      localStorage.removeItem('authToken');
+      setToken(null);
     }
   };
 
@@ -81,6 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token,
     loading,
     login,
+    register,
     logout,
     updateUser
   };

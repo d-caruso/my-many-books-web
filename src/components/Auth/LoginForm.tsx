@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { apiService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginFormProps {
-  onLoginSuccess: (token: string, user: any) => void;
   onSwitchToRegister: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onSwitchToRegister }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,12 +20,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onSwitchTo
     setError(null);
 
     try {
-      const response = await apiService.login(formData.email, formData.password);
-      localStorage.setItem('authToken', response.token);
-      onLoginSuccess(response.token, response.user);
+      await login(formData.email, formData.password);
+      // Authentication success will be handled by AuthContext
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }

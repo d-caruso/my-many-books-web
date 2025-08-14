@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { apiService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface RegisterFormProps {
-  onRegisterSuccess: (token: string, user: any) => void;
   onSwitchToLogin: () => void;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess, onSwitchToLogin }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -28,24 +28,23 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess, o
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long and contain uppercase, lowercase and numbers');
       setLoading(false);
       return;
     }
 
     try {
-      const response = await apiService.register({
+      await register({
         email: formData.email,
         password: formData.password,
         name: formData.name,
         surname: formData.surname
       });
-      localStorage.setItem('authToken', response.token);
-      onRegisterSuccess(response.token, response.user);
+      // Registration success will be handled by AuthContext
     } catch (err: any) {
       console.error('Registration error:', err);
-      setError(err.response?.data?.error || 'Registration failed');
+      setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

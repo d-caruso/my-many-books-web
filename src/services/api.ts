@@ -34,24 +34,9 @@ class ApiService {
     );
   }
 
-  // Auth methods
-  async login(email: string, password: string): Promise<{ token: string; user: User }> {
-    const response = await this.api.post('/api/auth/login', { email, password });
-    return response.data;
-  }
-
-  async register(userData: { email: string; password: string; name: string; surname: string }): Promise<{ token: string; user: User }> {
-    const response = await this.api.post('/api/auth/register', userData);
-    return response.data;
-  }
-
-  async logout(): Promise<void> {
-    await this.api.post('/api/auth/logout');
-  }
-
-  // User methods
+  // User methods  
   async getCurrentUser(): Promise<User> {
-    const response = await this.api.get('/api/auth/me');
+    const response = await this.api.get('/api/users');
     return response.data;
   }
 
