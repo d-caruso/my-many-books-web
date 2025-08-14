@@ -1,138 +1,145 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Button, 
+  IconButton, 
+  Menu, 
+  MenuItem, 
+  Box,
+  Avatar
+} from '@mui/material';
+import { 
+  MenuBook as MenuBookIcon, 
+  Menu as MenuIcon, 
+  ExpandMore as ExpandMoreIcon 
+} from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import { ThemeSelector } from '../Theme/ThemeSelector';
 
 export const Navbar: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
     await logout();
-    setIsMenuOpen(false);
+    handleMenuClose();
   };
 
-  const navItems = [
-    { path: '/', label: 'My Books', icon: 'book' },
-    { path: '/scanner', label: 'Scan ISBN', icon: 'camera' },
-    { path: '/search', label: 'Search', icon: 'search' },
-  ];
-
-  const isActive = (path: string) => location.pathname === path;
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    handleMenuClose();
+  };
 
   return (
-    <nav className="bg-surface border-b border-secondary-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center space-x-2 text-xl font-bold text-primary-600"
+    <AppBar position="sticky" color="default" elevation={1}>
+      <Toolbar>
+        {/* Logo */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+          <MenuBookIcon sx={{ mr: 1, fontSize: 32 }} color="primary" />
+          <Typography 
+            variant="h6" 
+            component="button"
+            onClick={() => navigate('/')}
+            sx={{ 
+              textDecoration: 'none', 
+              color: 'inherit',
+              fontWeight: 'bold',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
           >
-            <span style={{fontSize: '32px'}}>📚</span>
-            <span>My Many Books</span>
-          </Link>
+            My Many Books
+          </Typography>
+        </Box>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map(item => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive(item.path)
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-secondary-50'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+        {/* Navigation Items - Desktop */}
+        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+          <Button 
+            color={location.pathname === '/' ? 'primary' : 'inherit'}
+            onClick={() => navigate('/')}
+          >
+            My Books
+          </Button>
+          <Button 
+            color={location.pathname === '/search' ? 'primary' : 'inherit'}
+            onClick={() => navigate('/search')}
+          >
+            Search
+          </Button>
+          <Button 
+            color={location.pathname === '/scanner' ? 'primary' : 'inherit'}
+            onClick={() => navigate('/scanner')}
+          >
+            Scanner
+          </Button>
+        </Box>
 
-          {/* User Menu & Theme Selector */}
-          <div className="flex items-center space-x-4">
-            {/* Theme Selector */}
-            <ThemeSelector 
-              variant="dropdown" 
-              showLabels={false} 
-              className="hidden sm:block"
-            />
-
-            {/* User Menu */}
-            <div className="relative">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors"
-              >
-                <div className="w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-                <span className="hidden md:block text-sm font-medium">
-                  {user?.name} {user?.surname}
-                </span>
-                <span style={{fontSize: '16px'}}>▼</span>
-              </button>
-
-              {/* Dropdown Menu */}
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-lg border border-secondary-200 py-2 z-50">
-                  <div className="px-4 py-2 border-b border-secondary-200">
-                    <p className="text-sm font-medium text-text-primary">{user?.name} {user?.surname}</p>
-                    <p className="text-xs text-text-muted">{user?.email}</p>
-                  </div>
-                  
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-secondary-50 transition-colors"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-text-secondary hover:text-text-primary"
+        {/* User Menu */}
+        {user && (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+              onClick={handleMenuOpen}
+              startIcon={
+                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                  {user.name?.charAt(0).toUpperCase()}
+                </Avatar>
+              }
+              endIcon={<ExpandMoreIcon />}
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
             >
-              <span style={{fontSize: '24px'}}>☰</span>
-            </button>
-          </div>
-        </div>
+              {user.name} {user.surname}
+            </Button>
+            
+            {/* Mobile User Icon */}
+            <IconButton
+              onClick={handleMenuOpen}
+              sx={{ display: { xs: 'flex', sm: 'none' } }}
+            >
+              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                {user.name?.charAt(0).toUpperCase()}
+              </Avatar>
+            </IconButton>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-secondary-200">
-            <div className="space-y-2">
-              {navItems.map(item => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-secondary-50'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {/* Mobile Navigation Items */}
+              <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+                <MenuItem onClick={() => handleNavigation('/')}>My Books</MenuItem>
+                <MenuItem onClick={() => handleNavigation('/search')}>Search</MenuItem>
+                <MenuItem onClick={() => handleNavigation('/scanner')}>Scanner</MenuItem>
+              </Box>
+              
+              <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+            </Menu>
+          </Box>
         )}
-      </div>
 
-      {/* Backdrop for mobile menu */}
-      {isMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-25 z-40 md:hidden"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
-    </nav>
+        {/* Mobile Menu Icon (when no user) */}
+        {!user && (
+          <IconButton
+            onClick={handleMenuOpen}
+            sx={{ display: { xs: 'flex', md: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 };

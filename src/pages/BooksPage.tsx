@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Box, Button, IconButton, Chip, Typography } from '@mui/material';
+import { Add as AddIcon, Clear as ClearIcon, ViewModule as GridIcon, ViewList as ListIcon } from '@mui/icons-material';
 import { Book } from '../types';
 import { BookList, BookForm, BookDetails, type BookFormData } from '../components/Book';
 import { BookSearchForm } from '../components/Search';
@@ -247,14 +249,19 @@ export const BooksPage: React.FC = () => {
           </p>
         </div>
         
-        <button
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
           onClick={handleAddBook}
-          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 sm:px-6 rounded-lg font-medium transition-colors flex items-center space-x-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
+          size="large"
         >
-          <span style={{fontSize: '16px'}}>➕</span>
-          <span className="hidden xs:inline">Add Book</span>
-          <span className="xs:hidden">Add</span>
-        </button>
+          <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+            Add Book
+          </Box>
+          <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>
+            Add
+          </Box>
+        </Button>
       </div>
 
       {/* Search and filters */}
@@ -270,37 +277,45 @@ export const BooksPage: React.FC = () => {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {searchParams.get('q') && (
-            <button
+            <Chip
+              icon={<ClearIcon />}
+              label="Clear search"
               onClick={() => {
                 setSearchParams({});
                 clearSearch();
                 loadUserBooks();
               }}
-              className="text-text-muted hover:text-text-secondary text-sm flex items-center space-x-1"
-            >
-              <span style={{fontSize: '16px'}}>✕</span>
-              <span>Clear search</span>
-            </button>
+              onDelete={() => {
+                setSearchParams({});
+                clearSearch();
+                loadUserBooks();
+              }}
+              color="secondary"
+              variant="outlined"
+              size="small"
+            />
           )}
         </div>
 
-        <div className="flex items-center space-x-2">
-          <button
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
             onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-primary-100 text-primary-600' : 'text-text-muted hover:text-text-secondary'}`}
+            color={viewMode === 'grid' ? 'primary' : 'default'}
             title="Grid view"
+            size="small"
           >
-            <span style={{fontSize: '20px'}}>⚏</span>
-          </button>
+            <GridIcon />
+          </IconButton>
           
-          <button
+          <IconButton
             onClick={() => setViewMode('list')}
-            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary-100 text-primary-600' : 'text-text-muted hover:text-text-secondary'}`}
-            title="List view"
+            color={viewMode === 'list' ? 'primary' : 'default'}
+            title="List view" 
+            size="small"
           >
-            <span style={{fontSize: '20px'}}>☰</span>
-          </button>
-        </div>
+            <ListIcon />
+          </IconButton>
+        </Box>
       </div>
 
       {/* Books list */}
