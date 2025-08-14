@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchFilters } from '../../types';
+import { useCategories } from '../../hooks/useCategories';
 
 interface BookSearchFormProps {
   onSearch: (query: string, filters: SearchFilters) => void;
@@ -15,6 +16,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
   const [query, setQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<SearchFilters>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -121,20 +123,21 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
                 id="categoryId"
                 value={filters.categoryId || ''}
                 onChange={(e) => handleFilterChange('categoryId', e.target.value ? parseInt(e.target.value) : undefined)}
-                className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary"
+                disabled={categoriesLoading}
+                className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-background text-text-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">All Categories</option>
-                <option value="1">Fiction</option>
-                <option value="2">Non-Fiction</option>
-                <option value="3">Mystery</option>
-                <option value="4">Romance</option>
-                <option value="5">Science Fiction</option>
-                <option value="6">Fantasy</option>
-                <option value="7">Biography</option>
-                <option value="8">History</option>
-                <option value="9">Science</option>
-                <option value="10">Technology</option>
+                <option value="">
+                  {categoriesLoading ? 'Loading categories...' : 'All Categories'}
+                </option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
+              {categoriesError && (
+                <p className="mt-1 text-sm text-semantic-error">{categoriesError}</p>
+              )}
             </div>
 
             {/* Book status */}

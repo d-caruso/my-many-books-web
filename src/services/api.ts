@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Book, User, PaginatedResponse, ApiError, BookFormData, SearchFilters, SearchResult } from '../types';
+import { Book, User, Author, Category, PaginatedResponse, ApiError, BookFormData, SearchFilters, SearchResult } from '../types';
 
 class ApiService {
   private api: AxiosInstance;
@@ -129,6 +129,38 @@ class ApiService {
     return response.data;
   }
 
+  // Categories methods
+  async getCategories(): Promise<Category[]> {
+    const response = await this.api.get('/categories');
+    return response.data;
+  }
+
+  async getCategory(id: number): Promise<Category> {
+    const response = await this.api.get(`/categories/${id}`);
+    return response.data;
+  }
+
+  async createCategory(categoryData: { name: string }): Promise<Category> {
+    const response = await this.api.post('/categories', categoryData);
+    return response.data;
+  }
+
+  // Authors methods
+  async getAuthors(): Promise<Author[]> {
+    const response = await this.api.get('/authors');
+    return response.data;
+  }
+
+  async getAuthor(id: number): Promise<Author> {
+    const response = await this.api.get(`/authors/${id}`);
+    return response.data;
+  }
+
+  async createAuthor(authorData: { name: string; surname: string; nationality?: string }): Promise<Author> {
+    const response = await this.api.post('/authors', authorData);
+    return response.data;
+  }
+
   // Error handler
   handleApiError(error: any): ApiError {
     if (error.response?.data) {
@@ -152,4 +184,16 @@ export const bookAPI = {
   createBook: apiService.createBook.bind(apiService),
   updateBook: apiService.updateBook.bind(apiService),
   deleteBook: apiService.deleteBook.bind(apiService),
+};
+
+export const categoryAPI = {
+  getCategories: apiService.getCategories.bind(apiService),
+  getCategory: apiService.getCategory.bind(apiService),
+  createCategory: apiService.createCategory.bind(apiService),
+};
+
+export const authorAPI = {
+  getAuthors: apiService.getAuthors.bind(apiService),
+  getAuthor: apiService.getAuthor.bind(apiService),
+  createAuthor: apiService.createAuthor.bind(apiService),
 };
