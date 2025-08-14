@@ -45,8 +45,94 @@ class ApiService {
     return response.data;
   }
 
+  // Mock data for development mode
+  private getMockBooks(): Promise<PaginatedResponse<Book>> {
+    const mockBooks: Book[] = [
+      {
+        id: 1,
+        title: "The Great Gatsby",
+        isbnCode: "9780743273565",
+        editionNumber: 1,
+        editionDate: "2004-09-30",
+        status: "finished",
+        notes: "Classic American literature",
+        userId: 1,
+        authors: [{ id: 1, name: "F. Scott", surname: "Fitzgerald", nationality: "American", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }],
+        categories: [{ id: 1, name: "Fiction", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }, { id: 2, name: "Classic Literature", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }],
+        creationDate: "2024-01-15T10:00:00Z",
+        updateDate: "2024-01-15T10:00:00Z"
+      },
+      {
+        id: 2,
+        title: "To Kill a Mockingbird",
+        isbnCode: "9780061120084",
+        editionNumber: 1,
+        editionDate: "2006-05-23",
+        status: "in progress",
+        notes: "Powerful story about justice and morality",
+        userId: 1,
+        authors: [{ id: 2, name: "Harper", surname: "Lee", nationality: "American", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }],
+        categories: [{ id: 1, name: "Fiction", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }, { id: 3, name: "Social Issues", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }],
+        creationDate: "2024-01-20T14:30:00Z",
+        updateDate: "2024-01-25T16:45:00Z"
+      },
+      {
+        id: 3,
+        title: "1984",
+        isbnCode: "9780451524935",
+        editionNumber: 1,
+        editionDate: "1961-01-01",
+        status: "paused",
+        notes: "Dystopian masterpiece",
+        userId: 1,
+        authors: [{ id: 3, name: "George", surname: "Orwell", nationality: "British", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }],
+        categories: [{ id: 1, name: "Fiction", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }, { id: 4, name: "Dystopian", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }],
+        creationDate: "2024-02-01T09:15:00Z",
+        updateDate: "2024-02-01T09:15:00Z"
+      }
+    ];
+
+    return Promise.resolve({
+      books: mockBooks,
+      pagination: {
+        currentPage: 1,
+        totalPages: 1,
+        totalItems: mockBooks.length,
+        itemsPerPage: 10
+      }
+    });
+  }
+
+  private getMockCategories(): Promise<Category[]> {
+    return Promise.resolve([
+      { id: 1, name: "Fiction", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 2, name: "Classic Literature", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 3, name: "Social Issues", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 4, name: "Dystopian", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 5, name: "Science Fiction", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 6, name: "Mystery", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 7, name: "Romance", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 8, name: "Non-Fiction", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }
+    ]);
+  }
+
+  private getMockAuthors(): Promise<Author[]> {
+    return Promise.resolve([
+      { id: 1, name: "F. Scott", surname: "Fitzgerald", nationality: "American", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 2, name: "Harper", surname: "Lee", nationality: "American", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 3, name: "George", surname: "Orwell", nationality: "British", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 4, name: "Jane", surname: "Austen", nationality: "British", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" },
+      { id: 5, name: "Mark", surname: "Twain", nationality: "American", creationDate: "2024-01-01T00:00:00Z", updateDate: "2024-01-01T00:00:00Z" }
+    ]);
+  }
+
   // Book methods
   async getBooks(filters?: SearchFilters): Promise<PaginatedResponse<Book>> {
+    // In development mode, return mock data
+    if (process.env.NODE_ENV === 'development' && !process.env.REACT_APP_API_BASE_URL) {
+      return this.getMockBooks();
+    }
+    
     const params = new URLSearchParams();
     
     if (filters?.query) params.append('search', filters.query);
@@ -140,6 +226,11 @@ class ApiService {
 
   // Categories methods
   async getCategories(): Promise<Category[]> {
+    // In development mode, return mock data
+    if (process.env.NODE_ENV === 'development' && !process.env.REACT_APP_API_BASE_URL) {
+      return this.getMockCategories();
+    }
+    
     const response = await this.api.get('/api/categories');
     return response.data.categories || response.data;
   }
@@ -156,6 +247,11 @@ class ApiService {
 
   // Authors methods
   async getAuthors(): Promise<Author[]> {
+    // In development mode, return mock data
+    if (process.env.NODE_ENV === 'development' && !process.env.REACT_APP_API_BASE_URL) {
+      return this.getMockAuthors();
+    }
+    
     const response = await this.api.get('/api/authors');
     return response.data.authors || response.data;
   }
@@ -164,6 +260,16 @@ class ApiService {
     if (!searchTerm.trim()) {
       return [];
     }
+    
+    // In development mode, return filtered mock data
+    if (process.env.NODE_ENV === 'development' && !process.env.REACT_APP_API_BASE_URL) {
+      const mockAuthors = await this.getMockAuthors();
+      return mockAuthors.filter(author => 
+        author.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        author.surname.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
     const response = await this.api.get(`/api/authors?search=${encodeURIComponent(searchTerm.trim())}`);
     return response.data.authors || response.data;
   }
