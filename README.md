@@ -1,5 +1,9 @@
 # My Many Books - Web Frontend
 
+> **⚠️ MIGRATION NOTICE**: This repository has been migrated to a monorepo structure. Please use the new repository: [my-many-books](https://github.com/d-caruso/my-many-books)
+> 
+> This repository is now in maintenance mode and will not receive new updates.
+
 A React-based Progressive Web Application for managing personal book collections.
 
 ## Features
