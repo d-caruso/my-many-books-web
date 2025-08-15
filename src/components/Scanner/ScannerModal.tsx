@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Edit as EditIcon } from '@mui/icons-material';
+import {
+  Box,
+  Typography,
+  Button,
+  Container
+} from '@mui/material';
+import { Edit as EditIcon, ArrowBack as BackIcon } from '@mui/icons-material';
 import { ISBNScanner } from './ISBNScanner';
 import { ManualISBNInput } from './ManualISBNInput';
 import { ScanResult } from '../../types';
@@ -45,9 +51,23 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
   }
 
   return (
-    <>
+    <Container maxWidth="md" sx={{ py: 2 }}>
       {mode === 'scan' ? (
-        <>
+        <Box>
+          {/* Page Header */}
+          <Box mb={3} display="flex" alignItems="center" justifyContent="space-between">
+            <Typography variant="h4" fontWeight="600">
+              ISBN Scanner
+            </Typography>
+            <Button
+              onClick={handleClose}
+              startIcon={<BackIcon />}
+              variant="outlined"
+            >
+              Back
+            </Button>
+          </Box>
+          
           <ISBNScanner
             isOpen={isOpen}
             onScanSuccess={handleScanSuccess}
@@ -55,24 +75,41 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
             onClose={handleClose}
           />
           
-          {/* Manual Input Button Overlay */}
-          <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50">
-            <button
+          {/* Manual Input Button */}
+          <Box mt={3} textAlign="center">
+            <Button
               onClick={() => handleModeSwitch('manual')}
-              className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-opacity-30 transition-colors flex items-center space-x-2"
+              variant="contained"
+              startIcon={<EditIcon />}
+              size="large"
             >
-              <EditIcon sx={{ fontSize: 16 }} />
-              <span>Enter Manually</span>
-            </button>
-          </div>
-        </>
+              Enter Manually
+            </Button>
+          </Box>
+        </Box>
       ) : (
-        <ManualISBNInput
-          isOpen={mode === 'manual'}
-          onSubmit={handleManualSubmit}
-          onCancel={() => handleModeSwitch('scan')}
-        />
+        <Box>
+          {/* Page Header */}
+          <Box mb={3} display="flex" alignItems="center" justifyContent="space-between">
+            <Typography variant="h4" fontWeight="600">
+              Enter ISBN Manually
+            </Typography>
+            <Button
+              onClick={() => handleModeSwitch('scan')}
+              startIcon={<BackIcon />}
+              variant="outlined"
+            >
+              Back to Scanner
+            </Button>
+          </Box>
+          
+          <ManualISBNInput
+            isOpen={mode === 'manual'}
+            onSubmit={handleManualSubmit}
+            onCancel={() => handleModeSwitch('scan')}
+          />
+        </Box>
       )}
-    </>
+    </Container>
   );
 };

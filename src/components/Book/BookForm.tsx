@@ -148,10 +148,19 @@ export const BookForm: React.FC<BookFormProps> = ({
 
   return (
     <Paper elevation={3} sx={{ overflow: 'hidden' }}>
-      <Box sx={{ px: 3, py: 2, bgcolor: 'primary.50', borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{ px: 3, py: 2, bgcolor: 'primary.50', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="h5" fontWeight="600" color="text.primary">
           {title}
         </Typography>
+        <Button
+          onClick={onCancel}
+          startIcon={<CloseIcon />}
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 'auto' }}
+        >
+          Close
+        </Button>
       </Box>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
@@ -185,10 +194,117 @@ export const BookForm: React.FC<BookFormProps> = ({
             sx={{ fontFamily: 'monospace' }}
           />
 
+          {/* Authors and Reading Status */}
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+              gap: 2,
+              alignItems: 'start'
+            }}
+          >
+            {/* Authors */}
+            <Box>
+              <AuthorAutocomplete
+                value={null}
+                onChange={handleAuthorAdd}
+                placeholder="Search and add authors..."
+                disabled={loading}
+              />
+            </Box>
+
+            {/* Status */}
+            <FormControl fullWidth>
+              <InputLabel id="status-label">Reading Status</InputLabel>
+              <Select
+                labelId="status-label"
+                id="status"
+                value={formData.status || ''}
+                onChange={(e) => handleInputChange('status', e.target.value as Book['status'] || undefined)}
+                disabled={loading}
+                label="Reading Status"
+              >
+                <MenuItem value="">No Status</MenuItem>
+                <MenuItem value="in progress">In Progress</MenuItem>
+                <MenuItem value="paused">Paused</MenuItem>
+                <MenuItem value="finished">Finished</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Selected Authors Display */}
+          {formData.selectedAuthors.length > 0 && (
+            <Box>
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                {formData.selectedAuthors.map((author) => (
+                  <Chip
+                    key={author.id}
+                    label={`${author.name} ${author.surname}`}
+                    onDelete={() => handleAuthorRemove(author.id)}
+                    deleteIcon={<CloseIcon />}
+                    disabled={loading}
+                    color="primary"
+                    variant="outlined"
+                  />
+                ))}
+              </Stack>
+            </Box>
+          )}
+
+          {/* Categories */}
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Categories
+            </Typography>
+            
+            {categoriesLoading ? (
+              <Box display="flex" alignItems="center" gap={1}>
+                <CircularProgress size={16} />
+                <Typography variant="body2" color="text.secondary">
+                  Loading categories...
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
+                  gap: 1,
+                  maxHeight: 200,
+                  overflowY: 'auto',
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 2
+                }}
+              >
+                {[...categories].sort((a, b) => a.name.localeCompare(b.name)).map((category) => (
+                  <FormControlLabel
+                    key={category.id}
+                    control={
+                      <Checkbox
+                        checked={formData.selectedCategories.includes(category.id)}
+                        onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
+                        disabled={loading}
+                        size="small"
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        {category.name}
+                      </Typography>
+                    }
+                  />
+                ))}
+              </Box>
+            )}
+          </Box>
+
+          {/* Edition Info */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
               gap: 2
             }}
           >
@@ -224,101 +340,6 @@ export const BookForm: React.FC<BookFormProps> = ({
             />
           </Box>
 
-          {/* Status */}
-          <FormControl fullWidth>
-            <InputLabel id="status-label">Reading Status</InputLabel>
-            <Select
-              labelId="status-label"
-              id="status"
-              value={formData.status || ''}
-              onChange={(e) => handleInputChange('status', e.target.value as Book['status'] || undefined)}
-              disabled={loading}
-              label="Reading Status"
-            >
-              <MenuItem value="">No Status</MenuItem>
-              <MenuItem value="in progress">In Progress</MenuItem>
-              <MenuItem value="paused">Paused</MenuItem>
-              <MenuItem value="finished">Finished</MenuItem>
-            </Select>
-          </FormControl>
-
-          {/* Authors */}
-          <Box>
-            <Box mb={2}>
-              <AuthorAutocomplete
-                value={null}
-                onChange={handleAuthorAdd}
-                placeholder="Search and add authors..."
-                disabled={loading}
-              />
-            </Box>
-
-            {formData.selectedAuthors.length > 0 && (
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                {formData.selectedAuthors.map((author) => (
-                  <Chip
-                    key={author.id}
-                    label={`${author.name} ${author.surname}`}
-                    onDelete={() => handleAuthorRemove(author.id)}
-                    deleteIcon={<CloseIcon />}
-                    disabled={loading}
-                    color="primary"
-                    variant="outlined"
-                  />
-                ))}
-              </Stack>
-            )}
-          </Box>
-
-          {/* Categories */}
-          <Box>
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-              Categories
-            </Typography>
-            
-            {categoriesLoading ? (
-              <Box display="flex" alignItems="center" gap={1}>
-                <CircularProgress size={16} />
-                <Typography variant="body2" color="text.secondary">
-                  Loading categories...
-                </Typography>
-              </Box>
-            ) : (
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-                  gap: 1,
-                  maxHeight: 200,
-                  overflowY: 'auto',
-                  border: 1,
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  p: 2
-                }}
-              >
-                {categories.map((category) => (
-                  <FormControlLabel
-                    key={category.id}
-                    control={
-                      <Checkbox
-                        checked={formData.selectedCategories.includes(category.id)}
-                        onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
-                        disabled={loading}
-                        size="small"
-                      />
-                    }
-                    label={
-                      <Typography variant="body2">
-                        {category.name}
-                      </Typography>
-                    }
-                  />
-                ))}
-              </Box>
-            )}
-          </Box>
-
           {/* Notes */}
           <TextField
             fullWidth
@@ -335,11 +356,16 @@ export const BookForm: React.FC<BookFormProps> = ({
           <Divider />
           
           {/* Form Actions */}
-          <Stack 
-            direction={{ xs: 'column', sm: 'row' }} 
-            spacing={2} 
-            justifyContent="flex-end"
-            alignItems="stretch"
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2,
+              justifyContent: 'flex-end',
+              pt: 2,
+              borderTop: 1,
+              borderColor: 'divider'
+            }}
           >
             <Button
               type="button"
@@ -348,7 +374,7 @@ export const BookForm: React.FC<BookFormProps> = ({
               onClick={onCancel}
               disabled={loading}
               startIcon={<CancelIcon />}
-              sx={{ minWidth: 120 }}
+              sx={{ minWidth: 120, order: { xs: 2, sm: 1 } }}
             >
               Cancel
             </Button>
@@ -359,11 +385,16 @@ export const BookForm: React.FC<BookFormProps> = ({
               size="large"
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
-              sx={{ minWidth: 140 }}
+              sx={{ 
+                minWidth: 160, 
+                order: { xs: 1, sm: 2 },
+                bgcolor: 'primary.main',
+                '&:hover': { bgcolor: 'primary.dark' }
+              }}
             >
-              {book ? 'Update Book' : 'Add Book'}
+              {loading ? 'Saving...' : book ? 'Update Book' : 'Save Book'}
             </Button>
-          </Stack>
+          </Box>
         </Stack>
       </Box>
     </Paper>

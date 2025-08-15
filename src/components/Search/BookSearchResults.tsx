@@ -1,4 +1,19 @@
 import React from 'react';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  Button,
+  CircularProgress,
+  Alert
+} from '@mui/material';
+import {
+  Error as ErrorIcon,
+  MenuBook as BookIcon
+} from '@mui/icons-material';
 import { Book } from '../../types';
 
 interface BookSearchResultsProps {
@@ -22,82 +37,91 @@ export const BookSearchResults: React.FC<BookSearchResultsProps> = ({
 }) => {
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <div className="text-red-600 mb-2">
-          <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h3 className="text-lg font-medium text-red-800 mb-1">Search Error</h3>
-        <p className="text-red-600">{error}</p>
-      </div>
+      <Alert severity="error" sx={{ textAlign: 'center', py: 3 }}>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <ErrorIcon sx={{ fontSize: 32, mb: 1 }} />
+          <Typography variant="h6" fontWeight="medium" gutterBottom>
+            Search Error
+          </Typography>
+          <Typography variant="body2">{error}</Typography>
+        </Box>
+      </Alert>
     );
   }
 
   if (!loading && books.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-text-muted mb-4">
-          <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        </div>
-        <h3 className="text-lg font-medium text-text-primary mb-2">No books found</h3>
-        <p className="text-text-secondary">Try adjusting your search terms or filters</p>
-      </div>
+      <Box textAlign="center" py={6}>
+        <BookIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+        <Typography variant="h6" fontWeight="medium" color="text.primary" gutterBottom>
+          No books found
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Try adjusting your search terms or filters
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Box>
       {/* Results header */}
       {totalCount > 0 && (
-        <div className="flex items-center justify-between">
-          <p className="text-text-secondary">
+        <Box mb={3}>
+          <Typography variant="body2" color="text.secondary">
             Showing {books.length} of {totalCount} book{totalCount !== 1 ? 's' : ''}
-          </p>
-        </div>
+          </Typography>
+        </Box>
       )}
 
       {/* Book grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(4, 1fr)'
+          },
+          gap: 3,
+          mb: 3
+        }}
+      >
         {books.map((book) => (
           <BookCard 
-            key={book.id} 
+            key={book.id}
             book={book} 
             onClick={() => onBookSelect(book)} 
           />
         ))}
-      </div>
+      </Box>
 
       {/* Load more button */}
       {hasMore && (
-        <div className="text-center">
-          <button
+        <Box textAlign="center" mb={3}>
+          <Button
             onClick={onLoadMore}
             disabled={loading}
-            className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors font-medium"
+            variant="contained"
+            size="large"
+            startIcon={loading ? <CircularProgress size={20} /> : undefined}
           >
-            {loading ? (
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Loading...</span>
-              </div>
-            ) : (
-              'Load More Books'
-            )}
-          </button>
-        </div>
+            {loading ? 'Loading...' : 'Load More Books'}
+          </Button>
+        </Box>
       )}
 
       {/* Loading indicator for initial load */}
       {loading && books.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-text-secondary">Searching for books...</p>
-        </div>
+        <Box textAlign="center" py={6}>
+          <CircularProgress size={32} sx={{ mb: 2 }} />
+          <Typography variant="body2" color="text.secondary">
+            Searching for books...
+          </Typography>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
@@ -117,13 +141,13 @@ const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'finished':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       case 'in progress':
-        return 'bg-blue-100 text-blue-800';
+        return 'primary';
       case 'paused':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'warning';
       default:
-        return 'bg-secondary-100 text-text-muted';
+        return 'default';
     }
   };
 
@@ -141,70 +165,121 @@ const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
   };
 
   return (
-    <div 
+    <Card 
       onClick={onClick}
-      className="bg-surface rounded-lg shadow-sm border border-secondary-200 hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
+      sx={{ 
+        cursor: 'pointer',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        '&:hover': {
+          boxShadow: 2
+        }
+      }}
     >
       {/* Book cover */}
-      <div className="aspect-[3/4] bg-secondary-100 relative">
-        <div className="w-full h-full flex items-center justify-center text-text-muted">
-          <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        </div>
+      <Box position="relative">
+        <CardMedia
+          sx={{
+            height: 200,
+            bgcolor: 'grey.100',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'grey.500'
+          }}
+        >
+          <BookIcon sx={{ fontSize: 48 }} />
+        </CardMedia>
         
         {/* Status badge */}
         {book.status && (
-          <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(book.status)}`}>
-            {formatStatus(book.status)}
-          </div>
+          <Box position="absolute" top={8} right={8}>
+            <Chip
+              label={formatStatus(book.status)}
+              size="small"
+              color={getStatusColor(book.status) as any}
+            />
+          </Box>
         )}
-      </div>
+      </Box>
 
       {/* Book details */}
-      <div className="p-4">
-        <h3 className="font-semibold text-text-primary mb-1 line-clamp-2" title={book.title}>
+      <CardContent sx={{ flexGrow: 1, p: 2 }}>
+        <Typography 
+          variant="subtitle2" 
+          fontWeight="600"
+          gutterBottom
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+          title={book.title}
+        >
           {book.title}
-        </h3>
+        </Typography>
         
-        <p className="text-text-secondary text-sm mb-2 line-clamp-1" title={formatAuthors(book.authors)}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          gutterBottom
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+          title={formatAuthors(book.authors)}
+        >
           {formatAuthors(book.authors)}
-        </p>
+        </Typography>
 
         {/* Edition info */}
-        <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+        <Box display="flex" justifyContent="space-between" mb={1}>
           {book.editionNumber && (
-            <span>Edition {book.editionNumber}</span>
+            <Typography variant="caption" color="text.disabled">
+              Edition {book.editionNumber}
+            </Typography>
           )}
           {book.editionDate && (
-            <span>{new Date(book.editionDate).getFullYear()}</span>
+            <Typography variant="caption" color="text.disabled">
+              {new Date(book.editionDate).getFullYear()}
+            </Typography>
           )}
-        </div>
+        </Box>
 
         {/* Categories */}
         {book.categories && book.categories.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {book.categories.slice(0, 2).map((category) => (
-              <span 
-                key={category.id}
-                className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full"
-              >
-                {category.name}
-              </span>
-            ))}
-            {book.categories.length > 2 && (
-              <span className="text-xs text-text-muted">+{book.categories.length - 2} more</span>
-            )}
-          </div>
+          <Box mb={1}>
+            <Box display="flex" flexWrap="wrap" gap={0.5}>
+              {book.categories.slice(0, 2).map((category) => (
+                <Chip
+                  key={category.id}
+                  label={category.name}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  sx={{ fontSize: '0.7rem', height: 20 }}
+                />
+              ))}
+              {book.categories.length > 2 && (
+                <Typography variant="caption" color="text.disabled">
+                  +{book.categories.length - 2} more
+                </Typography>
+              )}
+            </Box>
+          </Box>
         )}
 
         {/* ISBN */}
         {book.isbnCode && (
-          <div className="mt-2 text-xs text-text-muted font-mono">
+          <Typography variant="caption" color="text.disabled" sx={{ fontFamily: 'monospace' }}>
             ISBN: {book.isbnCode}
-          </div>
+          </Typography>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

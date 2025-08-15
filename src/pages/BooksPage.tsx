@@ -36,11 +36,24 @@ export const BooksPage: React.FC = () => {
   useEffect(() => {
     const query = searchParams.get('q');
     const categoryId = searchParams.get('categoryId');
+    const authorId = searchParams.get('authorId');
     const sortBy = searchParams.get('sortBy');
+    const mode = searchParams.get('mode');
 
-    if (query || categoryId || sortBy) {
+    // Handle mode changes
+    if (mode === 'add') {
+      handleAddBook();
+      // Remove mode param to clean URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('mode');
+      setSearchParams(newParams, { replace: true });
+      return;
+    }
+
+    if (query || categoryId || authorId || sortBy) {
       const filters: any = {};
       if (categoryId) filters.categoryId = parseInt(categoryId);
+      if (authorId) filters.authorId = parseInt(authorId);
       if (sortBy) filters.sortBy = sortBy;
       searchBooks(query || '', filters);
     } else {
@@ -100,11 +113,13 @@ export const BooksPage: React.FC = () => {
       // Refresh the book list
       const query = searchParams.get('q');
       const categoryId = searchParams.get('categoryId');
+      const authorId = searchParams.get('authorId');
       const sortBy = searchParams.get('sortBy');
       
-      if (query || categoryId || sortBy) {
+      if (query || categoryId || authorId || sortBy) {
         const filters: any = {};
         if (categoryId) filters.categoryId = parseInt(categoryId);
+        if (authorId) filters.authorId = parseInt(authorId);
         if (sortBy) filters.sortBy = sortBy;
         await searchBooks(query || '', filters);
       } else {
@@ -134,11 +149,13 @@ export const BooksPage: React.FC = () => {
       // Refresh the book list
       const query = searchParams.get('q');
       const categoryId = searchParams.get('categoryId');
+      const authorId = searchParams.get('authorId');
       const sortBy = searchParams.get('sortBy');
       
-      if (query || categoryId || sortBy) {
+      if (query || categoryId || authorId || sortBy) {
         const filters: any = {};
         if (categoryId) filters.categoryId = parseInt(categoryId);
+        if (authorId) filters.authorId = parseInt(authorId);
         if (sortBy) filters.sortBy = sortBy;
         await searchBooks(query || '', filters);
       } else {
@@ -171,11 +188,13 @@ export const BooksPage: React.FC = () => {
       // Refresh the book list
       const query = searchParams.get('q');
       const categoryId = searchParams.get('categoryId');
+      const authorId = searchParams.get('authorId');
       const sortBy = searchParams.get('sortBy');
       
-      if (query || categoryId || sortBy) {
+      if (query || categoryId || authorId || sortBy) {
         const filters: any = {};
         if (categoryId) filters.categoryId = parseInt(categoryId);
+        if (authorId) filters.authorId = parseInt(authorId);
         if (sortBy) filters.sortBy = sortBy;
         await searchBooks(query || '', filters);
       } else {
@@ -201,7 +220,7 @@ export const BooksPage: React.FC = () => {
   // Render different modes
   if (pageMode === 'add' || pageMode === 'edit') {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div style={{ maxWidth: '672px', margin: '0 auto', padding: '2rem 1rem' }}>
         <BookForm
           book={selectedBook}
           onSubmit={handleFormSubmit}
@@ -219,7 +238,7 @@ export const BooksPage: React.FC = () => {
 
   if (pageMode === 'details' && selectedBook) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div style={{ maxWidth: '896px', margin: '0 auto', padding: '2rem 1rem' }}>
         <BookDetails
           book={selectedBook}
           onEdit={handleEditBook}
@@ -239,7 +258,7 @@ export const BooksPage: React.FC = () => {
 
   // List mode (default)
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style={{ maxWidth: '1024px', margin: '0 auto', padding: '2rem 1rem' }}>
       {/* Page header */}
       <div className="mb-8 flex items-center justify-between">
         <div>

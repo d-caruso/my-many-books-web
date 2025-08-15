@@ -10,12 +10,15 @@ import {
   MenuItem,
   Collapse,
   Typography,
-  InputAdornment
+  InputAdornment,
+  Alert,
+  Stack
 } from '@mui/material';
 import {
   Search as SearchIcon,
   ExpandMore as ExpandMoreIcon,
-  Clear as ClearIcon
+  Clear as ClearIcon,
+  Warning as WarningIcon
 } from '@mui/icons-material';
 import { SearchFilters, Author } from '../../types';
 import { useCategories } from '../../hooks/useCategories';
@@ -36,6 +39,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
   const [filters, setFilters] = useState<SearchFilters>({});
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const { categories, loading: categoriesLoading } = useCategories();
 
   useEffect(() => {
@@ -44,6 +48,17 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation: require either min 2 chars in query OR at least one filter
+    const hasValidQuery = query.trim().length >= 2;
+    const hasFilters = Object.values(filters).some(value => value !== undefined && value !== '' && value !== null);
+    
+    if (!hasValidQuery && !hasFilters) {
+      setValidationError('Please enter at least 2 characters in the search box or select an advanced filter.');
+      return;
+    }
+    
+    setValidationError(null);
     onSearch(query, filters);
   };
 
@@ -52,6 +67,10 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
       ...prev,
       [key]: value || undefined
     }));
+    // Clear validation error when filter changes
+    if (validationError) {
+      setValidationError(null);
+    }
   };
 
   const handleAuthorChange = (author: Author | null) => {
@@ -63,6 +82,15 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
     setFilters({});
     setQuery('');
     setSelectedAuthor(null);
+    setValidationError(null);
+  };
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    // Clear validation error when user starts typing
+    if (validationError) {
+      setValidationError(null);
+    }
   };
 
   return (
@@ -74,9 +102,10 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             fullWidth
             id="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleQueryChange(e.target.value)}
             placeholder="Search by title, author, ISBN..."
             disabled={loading}
+            error={!!validationError}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -96,6 +125,15 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
             {loading ? 'Searching...' : 'Search'}
           </Button>
         </Box>
+
+        {/* Validation Error */}
+        {validationError && (
+          <Box mb={2}>
+            <Alert severity="warning" icon={<WarningIcon />}>
+              {validationError}
+            </Alert>
+          </Box>
+        )}
 
         {/* Advanced filters toggle */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
@@ -132,32 +170,29 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
         {/* Advanced filters */}
         <Collapse in={showAdvanced}>
           <Box sx={{ pt: 2, borderTop: 1, borderColor: 'divider' }}>
-            <Box 
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: 'repeat(2, 1fr)',
-                  md: 'repeat(4, 1fr)'
-                },
-                gap: 2
-              }}
-            >
-              {/* Author search */}
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Author
-                </Typography>
+            <Stack spacing={2}>
+              {/* First row - Author, Category, Status */}
+              <Box 
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: {
+                    xs: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(3, 1fr)'
+                  },
+                  gap: 2
+                }}
+              >
+                {/* Author search */}
                 <AuthorAutocomplete
                   value={selectedAuthor}
                   onChange={handleAuthorChange}
                   placeholder="Search by author name..."
                   disabled={loading}
+                  size="small"
                 />
-              </Box>
 
-              {/* Category filter */}
-              <Box>
+                {/* Category filter */}
                 <FormControl fullWidth size="small">
                   <InputLabel id="category-label">Category</InputLabel>
                   <Select
@@ -171,17 +206,15 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
                     <MenuItem value="">
                       {categoriesLoading ? 'Loading categories...' : 'All Categories'}
                     </MenuItem>
-                    {categories.map((category) => (
+                    {[...categories].sort((a, b) => a.name.localeCompare(b.name)).map((category) => (
                       <MenuItem key={category.id} value={category.id}>
                         {category.name}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-              </Box>
 
-              {/* Book status */}
-              <Box>
+                {/* Book status */}
                 <FormControl fullWidth size="small">
                   <InputLabel id="status-label">Reading Status</InputLabel>
                   <Select
@@ -199,8 +232,8 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
                 </FormControl>
               </Box>
 
-              {/* Sort by */}
-              <Box>
+              {/* Second row - Sort By */}
+              <Box sx={{ maxWidth: { xs: '100%', sm: '300px' } }}>
                 <FormControl fullWidth size="small">
                   <InputLabel id="sortBy-label">Sort By</InputLabel>
                   <Select
@@ -216,7 +249,7 @@ export const BookSearchForm: React.FC<BookSearchFormProps> = ({
                   </Select>
                 </FormControl>
               </Box>
-            </Box>
+            </Stack>
           </Box>
         </Collapse>
       </Box>

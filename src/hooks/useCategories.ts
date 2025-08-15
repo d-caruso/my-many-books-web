@@ -24,7 +24,7 @@ export const useCategories = (): CategoriesState & CategoriesActions => {
 
     try {
       const categoriesData = await categoryAPI.getCategories();
-      setCategories(categoriesData);
+      setCategories(categoriesData.sort((a, b) => a.name.localeCompare(b.name)));
     } catch (err: any) {
       console.error('Failed to load categories:', err);
       setError(err.response?.data?.message || 'Failed to load categories');

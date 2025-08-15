@@ -14,13 +14,15 @@ interface AuthorAutocompleteProps {
   onChange: (author: Author | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  size?: 'small' | 'medium';
 }
 
 export const AuthorAutocomplete: React.FC<AuthorAutocompleteProps> = ({
   value,
   onChange,
   placeholder = "Search by author name...",
-  disabled = false
+  disabled = false,
+  size = 'medium'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [authors, setAuthors] = useState<Author[]>([]);
@@ -120,10 +122,10 @@ export const AuthorAutocomplete: React.FC<AuthorAutocompleteProps> = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Authors"
+          label="Author"
           placeholder={placeholder}
-          size="small"
           disabled={disabled}
+          size={size}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

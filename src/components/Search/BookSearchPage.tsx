@@ -83,7 +83,7 @@ export const BookSearchPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style={{ maxWidth: '1024px', margin: '0 auto', padding: '2rem 1rem' }}>
       {/* Page header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-2">
@@ -119,7 +119,7 @@ export const BookSearchPage: React.FC = () => {
 
           <div className="flex items-center space-x-4">
             <Button
-              onClick={() => navigate('/books/add')}
+              onClick={() => navigate('/?mode=add')}
               variant="contained"
               startIcon={<AddIcon />}
             >

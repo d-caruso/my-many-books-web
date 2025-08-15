@@ -1,4 +1,13 @@
 import React, { useState } from 'react';
+import {
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Alert,
+  Stack
+} from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { ScanResult } from '../../types';
 
@@ -123,73 +132,68 @@ export const ManualISBNInput: React.FC<ManualISBNInputProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-surface rounded-lg shadow-lg w-full max-w-md">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-text-primary">
-              Enter ISBN Manually
-            </h2>
-            <button
+    <Paper elevation={3} sx={{ p: 3, maxWidth: 500, mx: 'auto' }}>
+      <Box mb={3}>
+        <Typography variant="h5" fontWeight="600" gutterBottom>
+          Enter ISBN Manually
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Enter the 10 or 13 digit ISBN code from your book
+        </Typography>
+      </Box>
+
+      <Box component="form" onSubmit={handleSubmit}>
+        <Stack spacing={3}>
+          <TextField
+            fullWidth
+            id="isbn"
+            label="ISBN (10 or 13 digits)"
+            value={isbn}
+            onChange={handleInputChange}
+            placeholder="e.g., 978-0-123-45678-9"
+            error={!!error}
+            helperText={error}
+            inputProps={{ maxLength: 17 }}
+            autoComplete="off"
+          />
+
+          <Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              ISBN can be found on the back cover of most books, usually above or below the barcode.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Examples:
+            </Typography>
+            <Box component="ul" sx={{ pl: 2, m: 0 }}>
+              <Typography component="li" variant="body2" color="text.secondary">
+                ISBN-10: 0123456789
+              </Typography>
+              <Typography component="li" variant="body2" color="text.secondary">
+                ISBN-13: 9780123456789
+              </Typography>
+            </Box>
+          </Box>
+
+          <Stack direction="row" spacing={2}>
+            <Button
+              type="button"
               onClick={handleCancel}
-              className="p-2 rounded-full hover:bg-secondary-100 transition-colors"
+              variant="outlined"
+              fullWidth
             >
-              <CloseIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="isbn" className="block text-sm font-medium text-text-secondary mb-2">
-                ISBN (10 or 13 digits)
-              </label>
-              <input
-                type="text"
-                id="isbn"
-                value={isbn}
-                onChange={handleInputChange}
-                placeholder="e.g., 978-0-123-45678-9"
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  error
-                    ? 'border-semantic-error bg-red-50'
-                    : 'border-secondary-300 bg-background'
-                } text-text-primary`}
-                maxLength={17} // Account for dashes
-                autoComplete="off"
-              />
-              {error && (
-                <p className="mt-1 text-sm text-semantic-error">{error}</p>
-              )}
-            </div>
-
-            <div className="mb-4 text-sm text-text-muted">
-              <p className="mb-2">ISBN can be found on the back cover of most books, usually above or below the barcode.</p>
-              <p>Examples:</p>
-              <ul className="list-disc list-inside ml-4 space-y-1">
-                <li>ISBN-10: 0123456789</li>
-                <li>ISBN-13: 9780123456789</li>
-              </ul>
-            </div>
-
-            <div className="flex space-x-3">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="flex-1 px-4 py-2 border border-secondary-300 text-text-secondary rounded-lg hover:bg-secondary-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={!isbn.trim()}
-                className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors"
-              >
-                Add Book
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!isbn.trim()}
+              variant="contained"
+              fullWidth
+            >
+              Add Book
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+    </Paper>
   );
 };
